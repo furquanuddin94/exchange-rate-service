@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 
-const ExchangeRate = ({ title, rate }) => (
+const ExchangeRate: React.FC<{ title: string; rate: number }> = ({ title, rate }) => (
   <div className="bg-gray-200 rounded-lg p-4">
     <h2 className="text-lg text-gray-700 font-bold">{title}</h2>
     <p className="text-gray-700">1 THB = {rate} INR</p>

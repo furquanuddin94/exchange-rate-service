@@ -7,7 +7,7 @@ export function GET() {
     myHeaders.append("x-wu-operationname", "products");
 
     //read env var
-    
+
     console.log(process.env.test)
 
     const graphql = JSON.stringify({
@@ -27,5 +27,7 @@ export function GET() {
             const exchangeRate = data.data.products.products.find((product: { name: string; }) => product.name === "DIRECT TO BANK").exchangeRate;
             return Response.json(exchangeRate);
         })
-        .catch ((error) => console.error(error));
+        .catch((error) => {
+            return Response.json({ error: error.message });
+        });
 }
