@@ -2,8 +2,15 @@
 
 import React, { useEffect, useState } from "react";
 
+const ExchangeRate = ({ title, rate }) => (
+  <div className="bg-gray-200 rounded-lg p-4">
+    <h2 className="text-lg text-gray-700 font-bold">{title}</h2>
+    <p className="text-gray-700">1 THB = {rate} INR</p>
+  </div>
+);
+
 const App = () => {
-  const [exchangeRates, setExchangeRates] = useState({});
+  const [exchangeRates, setExchangeRates] = useState<{ label: string; value: number }[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -11,23 +18,38 @@ const App = () => {
       const latestDeeMoneyRate = await fetchLatestDeeMoneyRate();
       const latestWesternUnionRate = await fetchLatestWesternUnionRate();
 
-      setExchangeRates({
-        latestRate: latestRate,
-        latestDeeMoneyRate: latestDeeMoneyRate,
-        latestWesternUnionRate: latestWesternUnionRate
-      });
+      const allRates = [{
+        label: "Latest",
+        value: parseFloat(latestRate.toFixed(4))
+      },
+      {
+        label: "DeeMoney",
+        value: parseFloat(latestDeeMoneyRate.toFixed(4))
+      },
+      {
+        label: "Western Union",
+        value: parseFloat(latestWesternUnionRate.toFixed(4))
+      }]
+
+      const allRatesSorted = allRates.sort((a, b) => b.value - a.value);
+      setExchangeRates(allRatesSorted);
     };
 
     fetchData();
   }, []);
 
+
+
   return (
-    <div>
-      <h1>Exchange Rates THB/INR</h1>
-      <pre>{JSON.stringify(exchangeRates, null, 2)}</pre>
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-4">Exchange Rates THB/INR</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {exchangeRates.map(({ label, value }) => (
+          <ExchangeRate key={label} title={label} rate={value} />
+        ))}
+      </div>
     </div>
   );
-
 };
 
 const fetchLatestRate = async () => {
