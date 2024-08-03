@@ -9,10 +9,12 @@ const App = () => {
     const fetchData = async () => {
       const latestRate = await fetchLatestRate();
       const latestDeeMoneyRate = await fetchLatestDeeMoneyRate();
+      const latestWesternUnionRate = await fetchLatestWesternUnionRate();
 
       setExchangeRates({
         latestRate: latestRate,
-        latestDeeMoneyRate: latestDeeMoneyRate
+        latestDeeMoneyRate: latestDeeMoneyRate,
+        latestWesternUnionRate: latestWesternUnionRate
       });
     };
 
@@ -59,6 +61,21 @@ const fetchLatestDeeMoneyRate = async () => {
     return data;
   } catch (error) {
     console.error('Error fetching latest deemoney rates:', error);
+    return {};
+  }
+};
+
+const fetchLatestWesternUnionRate = async () => {
+  // Fetch exchange rates from source 1
+  // Return an object with currency rates
+
+  try {
+    const response = await fetch('/api/getLatestWesternUnionRates');
+    const data = await response.json();
+    console.log('Latest western union rates:', data);
+    return data;
+  } catch (error) {
+    console.error('Error fetching latest western union rates:', error);
     return {};
   }
 };
