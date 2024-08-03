@@ -21,11 +21,6 @@ const App = () => {
     fetchData();
   }, []);
 
-
-  if (!exchangeRates || Object.keys(exchangeRates).length === 0) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div>
       <h1>Exchange Rates THB/INR</h1>
