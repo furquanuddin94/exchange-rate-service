@@ -3,7 +3,7 @@ export function GET() {
     myHeaders.append("accept", "*/*");
     myHeaders.append("accept-language", "en-TH");
     myHeaders.append("content-type", "application/json");
-    myHeaders.append("x-wu-accesscode", process.env.x_wu_accesscode);
+    myHeaders.append("x-wu-accesscode", process.env.x_wu_accesscode || "");
     myHeaders.append("x-wu-operationname", "products");
 
     //read env var
