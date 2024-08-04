@@ -4,7 +4,7 @@ import { kv } from "@vercel/kv";
 
 export async function GET() {
   noStore();
-  const latestExchangeRate = await kv.get('latestExchangeRate');
+  const latestExchangeRate = await kv.get('latest-exchange-rate');
 
   if (latestExchangeRate) {
     console.log("Serving latest fx from cache.");
@@ -16,7 +16,7 @@ export async function GET() {
       .then(async data => {
         const value = data.thb.inr;
         const rate = new ExchangeRateInfo(value, new Date(Date.now()));
-        await kv.set('latestExchangeRate', rate, { ex: 300 });
+        await kv.set('latest-exchange-rate', rate, { ex: 300 });
         return Response.json(rate);
       })
       .catch(error => {

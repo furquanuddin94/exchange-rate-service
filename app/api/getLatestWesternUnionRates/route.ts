@@ -4,7 +4,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 
 export async function GET() {
     noStore();
-    const westernUnionExchangeRate = await kv.get('westernUnionExchangeRate');
+    const westernUnionExchangeRate = await kv.get('western-union-exchange-rate');
 
     if (westernUnionExchangeRate) {
         console.log("Serving western union fx from cache.");
@@ -38,7 +38,7 @@ export async function GET() {
             .then(async (data) => {
                 const value = data.data.products.products.find((product: { name: string; }) => product.name === "DIRECT TO BANK").exchangeRate;
                 const rate = new ExchangeRateInfo(value, new Date(Date.now()));
-                await kv.set('westernUnionExchangeRate', rate, { ex: 300 });
+                await kv.set('western-union-exchange-rate', rate, { ex: 300 });
                 return Response.json(rate);
             })
             .catch((error) => {

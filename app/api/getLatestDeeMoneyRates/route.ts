@@ -4,7 +4,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 
 export async function GET() {
     noStore();
-    const inrExchangeRate = await kv.get('inrExchangeRate');
+    const inrExchangeRate = await kv.get('deemoney-exchange-rate');
 
     if (inrExchangeRate) {
         console.log("Serving deemoney fx from cache.");
@@ -16,7 +16,7 @@ export async function GET() {
         .then(async data => {
             const value = 1 / (data.exchangeRates[0].rates.INR);
             const rate = new ExchangeRateInfo(value, new Date(Date.now()));
-            await kv.set('inrExchangeRate', rate, { ex: 300 });
+            await kv.set('deemoney-exchange-rate', rate, { ex: 300 });
             return Response.json(rate);
         })
         .catch(error => {
