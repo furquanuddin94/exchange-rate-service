@@ -16,7 +16,7 @@ export async function GET() {
       .then(async data => {
         const value = data.thb.inr;
         const rate = new ExchangeRateInfo(value, new Date(Date.now()));
-        await kv.set('latestExchangeRate', rate, { ex: 5 });
+        await kv.set('latestExchangeRate', rate, { ex: 300 });
         return Response.json(rate);
       })
       .catch(error => {
