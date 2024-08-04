@@ -16,7 +16,7 @@ export async function GET() {
             const value = 1 / (data.exchangeRates[0].rates.INR);
             const rate = new ExchangeRateInfo(value, new Date(Date.now()));
             await kv.set('inrExchangeRate', rate, { ex: 300 });
-            return Response.json(inrExchangeRate);
+            return Response.json(rate);
         })
         .catch(error => {
             return Response.json({ error: error.message });
