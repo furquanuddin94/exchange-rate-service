@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ExchangeRateInfo } from "./common/model/ExchangeRateInfo";
 
+
 const ExchangeRate: React.FC<{ source: string; rate?: number, fetchedAt?: Date }> = ({ source, rate, fetchedAt }) => {
   const [timeElapsed, setTimeElapsed] = useState<string>("");
 
