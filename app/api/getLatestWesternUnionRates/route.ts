@@ -1,10 +1,11 @@
 import { ExchangeRateInfo } from "@/app/common/model/ExchangeRateInfo";
 import { kv } from "@vercel/kv";
-import { unstable_noStore as noStore } from 'next/cache';
 
 export async function GET() {
-    noStore();
+
     const westernUnionExchangeRate = await kv.get('western-union-exchange-rate');
+    console.log("After time",Date.now());
+    console.log("After", westernUnionExchangeRate)
 
     if (westernUnionExchangeRate) {
         console.log("Serving western union fx from cache.");

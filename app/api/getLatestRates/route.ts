@@ -1,9 +1,7 @@
-import { unstable_noStore as noStore } from 'next/cache';
 import { ExchangeRateInfo } from "@/app/common/model/ExchangeRateInfo";
 import { kv } from "@vercel/kv";
 
 export async function GET() {
-  noStore();
   const latestExchangeRate = await kv.get('latest-exchange-rate');
 
   if (latestExchangeRate) {
