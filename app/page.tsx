@@ -11,6 +11,8 @@ const fetchExchangeRates = async () => {
     ? `https://${process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL}`
     : 'http://localhost:3000';
 
+  console.log("Hostname", hostname);
+
   try {
     console.log("Fetching exchange rates from next apis");
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
