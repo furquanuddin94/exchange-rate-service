@@ -16,7 +16,9 @@ const ExchangeRate: React.FC<ExchangeRateProps> = ({ source, rate, fetchedAt }) 
     if (fetchedAt) {
       const calculateElapsedTime = () => {
         const currentTime = new Date();
-        const elapsedTime = currentTime.getTime() - new Date(fetchedAt).getTime();
+        const fetchedAtTime = new Date(fetchedAt);
+        const elapsedTime = currentTime.getTime() - fetchedAtTime.getTime();
+        console.log('currentTime', currentTime, 'fetchedAt', fetchedAtTime, 'elapsedTime', elapsedTime);
         const minutes = Math.floor(elapsedTime / 60000);
         const seconds = Math.floor((elapsedTime % 60000) / 1000);
         setTimeElapsed(`${minutes}m ${seconds}s`);
