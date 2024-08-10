@@ -9,7 +9,7 @@ import { GET as getLatestRates } from './api/getLatestRates/route';
 // Fetch data on the server side
 const fetchExchangeRates = async () => {
 
-  const hostname = process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL || 'http://localhost:3000';
+  const hostname = 'https://' + process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL || 'http://localhost:3000';
 
   try {
     console.log("Fetching exchange rates from next apis");
