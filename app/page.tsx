@@ -1,22 +1,21 @@
 import React from 'react';
 import ExchangeRatesList from '../components/ExchangeRatesList'; // Import the client component
 import { ExchangeRateInfo } from './common/model/ExchangeRateInfo';
-import { GET as getLatestDeeMoneyRates } from './api/getLatestDeeMoneyRates/route';
-import { GET as getLatestWesternUnionRates } from './api/getLatestWesternUnionRates/route';
-import { GET as getLatestRates } from './api/getLatestRates/route';
 
-
-// Fetch data on the server side
+// Fetch data on the server side̥̥̥̥̥̥̥̥ ̥
 const fetchExchangeRates = async () => {
 
-  const hostname = 'https://' + process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL || 'http://localhost:3000';
+  const hostname = process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL
+    ? `https://${process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL}:3000`
+    : 'http://localhost:3000';
+  console.log(hostname);
 
   try {
     console.log("Fetching exchange rates from next apis");
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
-      fetch(hostname + '/api/getLatestDeeMoneyRates', { cache: 'no-store' }),
-      fetch(hostname + '/api/getLatestRates', { cache: 'no-store' }),
-      fetch(hostname + '/api/getLatestWesternUnionRates', { cache: 'no-store' })
+      fetch(hostname + '/api/getLatestRates', { next: { revalidate: 0 } }),
+      fetch(hostname + '/api/getLatestDeeMoneyRates', { next: { revalidate: 0 } }),
+      fetch(hostname + '/api/getLatestWesternUnionRates', { next: { revalidate: 0 } })
     ]);
 
     const [latestRateData, latestDeeMoneyRateData, latestWesternUnionRateData] = await Promise.all([
