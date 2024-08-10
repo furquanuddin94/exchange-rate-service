@@ -2,6 +2,8 @@ import React from 'react';
 import ExchangeRatesList from '../components/ExchangeRatesList'; // Import the client component
 import { ExchangeRateInfo } from './common/model/ExchangeRateInfo';
 
+export const fetchCache = 'force-no-store'
+
 // Fetch data on the server side̥̥̥̥̥̥̥̥ ̥
 const fetchExchangeRates = async () => {
 
@@ -13,9 +15,9 @@ const fetchExchangeRates = async () => {
   try {
     console.log("Fetching exchange rates from next apis");
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
-      fetch(hostname + '/api/getLatestRates', { next: { revalidate: 0 } }),
-      fetch(hostname + '/api/getLatestDeeMoneyRates', { next: { revalidate: 0 } }),
-      fetch(hostname + '/api/getLatestWesternUnionRates', { next: { revalidate: 0 } })
+      fetch(hostname + '/api/getLatestRates'),
+      fetch(hostname + '/api/getLatestDeeMoneyRates'),
+      fetch(hostname + '/api/getLatestWesternUnionRates')
     ]);
 
     const [latestRateData, latestDeeMoneyRateData, latestWesternUnionRateData] = await Promise.all([

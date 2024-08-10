@@ -1,6 +1,8 @@
 import { ExchangeRateInfo } from "@/app/common/model/ExchangeRateInfo";
 import { kv } from "@vercel/kv";
 
+export const fetchCache = 'force-no-store'
+
 export async function GET() {
   const latestExchangeRate = await kv.get('latest-exchange-rate');
 
