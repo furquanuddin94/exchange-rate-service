@@ -1,10 +1,11 @@
 import { ExchangeRateInfo } from "@/app/common/model/ExchangeRateInfo";
+import cacheKeys from "@/app/utils/cacheKeys";
 import { kv } from "@vercel/kv";
 
 export const fetchCache = 'force-no-store'
 
 export async function GET() {
-  const latestExchangeRate = await kv.get('latest-exchange-rate');
+  const latestExchangeRate = await kv.get(cacheKeys.getLatestExchangeRateKey());
 
   if (latestExchangeRate) {
     console.log("Serving latest fx from cache.");
@@ -16,7 +17,7 @@ export async function GET() {
       .then(async data => {
         const value = data.thb.inr;
         const rate = new ExchangeRateInfo(value, new Date(Date.now()));
-        await kv.set('latest-exchange-rate', rate, { ex: 300 });
+        await kv.set(cacheKeys.getLatestExchangeRateKey(), rate, { ex: 300 });
         return Response.json(rate);
       })
       .catch(error => {

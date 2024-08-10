@@ -1,10 +1,11 @@
 import { ExchangeRateInfo } from "@/app/common/model/ExchangeRateInfo";
+import cacheKeys from "@/app/utils/cacheKeys";
 import { kv } from "@vercel/kv";
 
 export const fetchCache = 'force-no-store'
 
 export async function GET() {
-    const inrExchangeRate = await kv.get('deemoney-exchange-rate');
+    const inrExchangeRate = await kv.get(cacheKeys.getDeeMoneyExchangeRateKey());
 
     if (inrExchangeRate) {
         console.log("Serving deemoney fx from cache.");
@@ -16,7 +17,7 @@ export async function GET() {
         .then(async data => {
             const value = 1 / (data.exchangeRates[0].rates.INR);
             const rate = new ExchangeRateInfo(value, new Date(Date.now()));
-            await kv.set('deemoney-exchange-rate', rate, { ex: 300 });
+            await kv.set(cacheKeys.getDeeMoneyExchangeRateKey(), rate, { ex: 300 });
             return Response.json(rate);
         })
         .catch(error => {
