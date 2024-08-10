@@ -10,7 +10,6 @@ const fetchExchangeRates = async () => {
   const hostname = process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL
     ? `https://${process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL}`
     : 'http://localhost:3000';
-  console.log(hostname);
 
   try {
     console.log("Fetching exchange rates from next apis");
