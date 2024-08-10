@@ -9,12 +9,14 @@ import { GET as getLatestRates } from './api/getLatestRates/route';
 // Fetch data on the server side
 const fetchExchangeRates = async () => {
 
+  const hostname = process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL || 'http://localhost:3000';
+
   try {
     console.log("Fetching exchange rates from next apis");
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
-      getLatestDeeMoneyRates(),
-      getLatestRates(),
-      getLatestWesternUnionRates()
+      fetch(hostname + '/api/getLatestDeeMoneyRates', { cache: 'no-store' }),
+      fetch(hostname + '/api/getLatestRates', { cache: 'no-store' }),
+      fetch(hostname + '/api/getLatestWesternUnionRates', { cache: 'no-store' })
     ]);
 
     const [latestRateData, latestDeeMoneyRateData, latestWesternUnionRateData] = await Promise.all([
