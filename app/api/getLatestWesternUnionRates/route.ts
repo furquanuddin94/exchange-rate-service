@@ -1,11 +1,12 @@
 import { ExchangeRateInfo } from "@/app/common/model/ExchangeRateInfo";
+import { cacheKeys, cacheExpiry }from "@/app/utils/cacheUtils";
 import { kv } from "@vercel/kv";
 
 export const fetchCache = 'force-no-store'
 
 export async function GET() {
 
-    const westernUnionExchangeRate = await kv.get('western-union-exchange-rate');
+    const westernUnionExchangeRate = await kv.get(cacheKeys.getWesternUnionFxKey);
 
     if (westernUnionExchangeRate) {
         console.log("Serving western union fx from cache.");
@@ -35,7 +36,7 @@ export async function GET() {
             .then(async (data) => {
                 const value = data.data.products.products.find((product: { name: string; }) => product.name === "DIRECT TO BANK").exchangeRate;
                 const rate = new ExchangeRateInfo(value, new Date(Date.now()));
-                await kv.set('western-union-exchange-rate', rate, { ex: 300 });
+                await kv.set(cacheKeys.getWesternUnionFxKey, rate, { ex: cacheExpiry.getWesternUnionFxExpiry });
                 return Response.json(rate);
             })
             .catch((error) => {
