@@ -30,6 +30,10 @@ const fetchExchangeRates = async () => {
       fetch(hostname + '/api/getLatestWesternUnionRates', { credentials: "same-origin" })
     ]);
 
+    console.log("latest", await latestRateResponse.text());
+    console.log("latestDeeMoney", await latestDeeMoneyRateResponse.text());
+    console.log("latestWesternUnion", await latestWesternUnionRateResponse.text());
+
     const [latestRateData, latestDeeMoneyRateData, latestWesternUnionRateData] = await Promise.all([
       latestRateResponse.json(),
       latestDeeMoneyRateResponse.json(),
