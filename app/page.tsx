@@ -25,9 +25,9 @@ const fetchExchangeRates = async () => {
 
 
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
-      fetch(hostname + '/api/getLatestRates', { credentials: "same-origin" }),
-      fetch(hostname + '/api/getLatestDeeMoneyRates', { credentials: "same-origin" }),
-      fetch(hostname + '/api/getLatestWesternUnionRates', { credentials: "same-origin" })
+      fetch(hostname + '/api/getLatestRates', { credentials: "include" }),
+      fetch(hostname + '/api/getLatestDeeMoneyRates', { credentials: "include" }),
+      fetch(hostname + '/api/getLatestWesternUnionRates', { credentials: "include" })
     ]);
 
     console.log("latest", await latestRateResponse.text());
