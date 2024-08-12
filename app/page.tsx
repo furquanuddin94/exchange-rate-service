@@ -1,17 +1,18 @@
 import React from 'react';
 import ExchangeRatesList from '../components/ExchangeRatesList'; // Import the client component
 import { ExchangeRateInfo } from './common/model/ExchangeRateInfo';
-import { cookies } from 'next/headers';
+import { headers, cookies } from 'next/headers';
 
 export const fetchCache = 'force-no-store'
 
 // Fetch data on the server side̥̥̥̥̥̥̥̥ ̥
 const fetchExchangeRates = async () => {
 
-  const hostname = process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL
-    ? `https://${process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL}`
-    : 'http://localhost:3000';
+  //const hostname = process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL
+  //  ? `https://${process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL}`
+  //  : 'http://localhost:3000';
 
+  const hostname = headers().get('x-forwarded-host')
   console.log("Hostname", hostname);
 
   try {
