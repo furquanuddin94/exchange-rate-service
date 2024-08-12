@@ -12,7 +12,8 @@ const fetchExchangeRates = async () => {
   //  ? `https://${process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL}`
   //  : 'http://localhost:3000';
 
-  const hostname = headers().get('x-forwarded-host')
+  const host = headers().get('x-forwarded-host') || '';
+  const hostname = host.includes("localhost") ? "http://localhost:3000" : `https://${host}`
   console.log("Hostname", hostname);
 
   try {
