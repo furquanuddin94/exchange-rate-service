@@ -1,7 +1,7 @@
 import React from 'react';
 import ExchangeRatesList from '../components/ExchangeRatesList'; // Import the client component
 import { ExchangeRateInfo } from './common/model/ExchangeRateInfo';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
 export const fetchCache = 'force-no-store'
 
@@ -18,12 +18,12 @@ const fetchExchangeRates = async () => {
     console.log("Fetching exchange rates from next apis");
 
     const cookie = cookies();
-    console.log("Cookie", cookie);
-    
+    console.log("Cookie", cookie.get);
+
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
-      fetch(hostname + '/api/getLatestRates'),
-      fetch(hostname + '/api/getLatestDeeMoneyRates'),
-      fetch(hostname + '/api/getLatestWesternUnionRates')
+      fetch(hostname + '/api/getLatestRates', { headers: { cookie: cookie.toString() } }),
+      fetch(hostname + '/api/getLatestDeeMoneyRates', { headers: { cookie: cookie.toString() } }),
+      fetch(hostname + '/api/getLatestWesternUnionRates', { headers: { cookie: cookie.toString() } })
     ]);
 
     console.log("latest", await latestRateResponse.text());
