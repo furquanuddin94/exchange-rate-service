@@ -1,7 +1,7 @@
 import React from 'react';
 import ExchangeRatesList from '../components/ExchangeRatesList'; // Import the client component
 import { ExchangeRateInfo } from './common/model/ExchangeRateInfo';
-import { cookies, headers } from 'next/headers';
+import { cookies } from 'next/headers';
 
 export const fetchCache = 'force-no-store'
 
@@ -19,20 +19,19 @@ const fetchExchangeRates = async () => {
 
     // Get the cookies
     const cookieStore = cookies();
-    const cookie = cookieStore.get('_vercel_jwt');
+    const cookie = cookieStore.getAll();
 
-    console.log("cookie", cookie?.name, cookie?.value);
+    const headers = {
+      cookie: cookie.map(({ name, value }) => `${name}=${value}`).join('; '),
+    }
 
+    console.log("headers", headers);
 
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
-      fetch(hostname + '/api/getLatestRates', { credentials: "include" }),
-      fetch(hostname + '/api/getLatestDeeMoneyRates', { credentials: "include" }),
-      fetch(hostname + '/api/getLatestWesternUnionRates', { credentials: "include" })
+      fetch(hostname + '/api/getLatestRates', { headers }),
+      fetch(hostname + '/api/getLatestDeeMoneyRates', { headers }),
+      fetch(hostname + '/api/getLatestWesternUnionRates', { headers })
     ]);
-
-    console.log("latest", await latestRateResponse.text());
-    console.log("latestDeeMoney", await latestDeeMoneyRateResponse.text());
-    console.log("latestWesternUnion", await latestWesternUnionRateResponse.text());
 
     const [latestRateData, latestDeeMoneyRateData, latestWesternUnionRateData] = await Promise.all([
       latestRateResponse.json(),
