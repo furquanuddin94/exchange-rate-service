@@ -17,13 +17,17 @@ const fetchExchangeRates = async () => {
   try {
     console.log("Fetching exchange rates from next apis");
 
-    const cookie = cookies();
-    console.log("Cookie", cookie.get);
+    // Get the cookies
+    const cookieStore = cookies();
+    const cookie = cookieStore.get('_vercel_jwt');
+
+    console.log("cookie", cookie?.name, cookie?.value);
+
 
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
-      fetch(hostname + '/api/getLatestRates', { headers: { cookie: cookie.toString() } }),
-      fetch(hostname + '/api/getLatestDeeMoneyRates', { headers: { cookie: cookie.toString() } }),
-      fetch(hostname + '/api/getLatestWesternUnionRates', { headers: { cookie: cookie.toString() } })
+      fetch(hostname + '/api/getLatestRates', { credentials: "same-origin" }),
+      fetch(hostname + '/api/getLatestDeeMoneyRates', { credentials: "same-origin" }),
+      fetch(hostname + '/api/getLatestWesternUnionRates', { credentials: "same-origin" })
     ]);
 
     console.log("latest", await latestRateResponse.text());
