@@ -8,10 +8,6 @@ export const fetchCache = 'force-no-store'
 // Fetch data on the server side̥̥̥̥̥̥̥̥ ̥
 const fetchExchangeRates = async () => {
 
-  //const hostname = process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL
-  //  ? `https://${process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL}`
-  //  : 'http://localhost:3000';
-
   const host = headers().get('x-forwarded-host') || '';
   const hostname = host.includes("localhost") ? "http://localhost:3000" : `https://${host}`
   console.log("Hostname", hostname);
