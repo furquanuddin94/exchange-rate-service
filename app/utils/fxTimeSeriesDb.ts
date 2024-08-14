@@ -54,7 +54,7 @@ const FxTimeSeriesDB = {
             return data
         }
         return null
-    }
+    },
 
     /**
      * Retrieves aggregated time series data from the database.
