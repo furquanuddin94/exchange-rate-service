@@ -1,6 +1,7 @@
 import { cookies, headers } from 'next/headers';
 import React from 'react';
 import ExchangeRatesList from '../components/ExchangeRatesList'; // Import the client component
+import { MultiLineChart } from '@/components/MultiLineChart';
 
 export const fetchCache = 'force-no-store'
 
@@ -75,6 +76,11 @@ const Page: React.FC = async () => {
       <h1 className="text-3xl font-bold mb-4">Exchange Rates THB/INR</h1>
       {/* Pass fetched data to the client component */}
       <ExchangeRatesList exchangeRates={JSON.parse(JSON.stringify(exchangeRates))} />
+
+      {/* Insert the MultiLineChart component below the cards */}
+      <div className="my-8 max-w-3xl mx-auto">
+        <MultiLineChart />
+      </div>
     </div>
   );
 };

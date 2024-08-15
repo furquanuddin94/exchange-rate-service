@@ -2,6 +2,7 @@
 
 import { TimeSeriesData } from '@/app/utils/fxTimeSeriesDb';
 import React, { useEffect, useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 
 interface ExchangeRateProps {
   source: string;
@@ -17,7 +18,7 @@ const ExchangeRate: React.FC<ExchangeRateProps> = ({ source, rate, fetchedAt }) 
       const calculateElapsedTime = () => {
         const now = Date.now();
         const elapsedTime = Math.round((now - fetchedAt) / 1000);
-        
+
         const minutes = Math.floor(elapsedTime / 60);
         const seconds = elapsedTime % 60;
 
@@ -30,17 +31,21 @@ const ExchangeRate: React.FC<ExchangeRateProps> = ({ source, rate, fetchedAt }) 
   }, [fetchedAt]);
 
   return (
-    <div className="bg-gray-200 rounded-lg p-4">
-      <h2 className="text-lg text-gray-700 font-bold">{source}</h2>
-      {rate && (
-        <p className="text-gray-700">1 THB = {rate} INR</p>
-      )}
-      {timeElapsed !== "" && (
-        <p className="text-gray-700 text-xs">
-          Last fetched: <span className="font-light">{timeElapsed} ago</span>
-        </p>
-      )}
-    </div>
+    <Card className="rounded-lg p-1 shadow max-h-36">
+      <CardHeader>
+        <CardTitle>{source}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {rate && (
+          <p>1 THB = {rate} INR</p>
+        )}
+        {timeElapsed !== "" && (
+          <p className="text-xs">
+            Last fetched: <span className="font-light">{timeElapsed} ago</span>
+          </p>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
