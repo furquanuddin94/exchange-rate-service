@@ -76,7 +76,7 @@ const Page: React.FC = async () => {
     <div className="container mx-auto p-4">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-3xl font-bold">Exchange Rates THB/INR</h1>
-        <ModeToggle className="ml-auto" /> {/* Aligns the toggle to the right */}
+        <ModeToggle /> {/* Aligns the toggle to the right */}
       </div>
       {/* Pass fetched data to the client component */}
       <ExchangeRatesList exchangeRates={JSON.parse(JSON.stringify(exchangeRates))} />
