@@ -1,6 +1,6 @@
 import { kv } from '@vercel/kv';
 
-interface TimeSeriesData {
+export interface TimeSeriesData {
     timestamp: number;
     fxRate: number;
 }
@@ -11,10 +11,25 @@ const FxTimeSeriesDB = {
      *
      * @param {string} streamKey - The key identifying the stream of time series data.
      * @param {number} fxRate - The foreign exchange rate to be saved.
-     * @return {Promise<void>} A promise resolving when the data has been saved.
+     * @return {Promise<TimeSeriesData>} A promise resolving when the data has been saved and returns the saved data.
      */
-    async saveFx(streamKey: string, fxRate: number): Promise<void> {
-        await kv.xadd(streamKey, '*', { fxRate: fxRate });
+    async saveFx(streamKey: string, fxRate: number): Promise<TimeSeriesData> {
+        // Save fxRate to the stream and get the entry id
+        const id = await kv.xadd(streamKey, '*', { fxRate: fxRate });
+
+        // Retrieve the saved data using the entry id
+        const data = await kv.xrange(streamKey, id, id);
+
+        // Extract the first (and only) entry
+        const [entryId, fields] = Object.entries(data)[0];
+
+        const timestamp = parseInt(entryId.split('-')[0], 10);
+        const savedData = {
+            timestamp,
+            fxRate: fields.fxRate as number,
+        };
+
+        return savedData;
     },
 
     /**

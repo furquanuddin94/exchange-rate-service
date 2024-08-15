@@ -1,12 +1,12 @@
 'use client';
 
+import { TimeSeriesData } from '@/app/utils/fxTimeSeriesDb';
 import React, { useEffect, useState } from 'react';
-import { ExchangeRateInfo } from '../app/common/model/ExchangeRateInfo';
 
 interface ExchangeRateProps {
   source: string;
   rate?: number;
-  fetchedAt?: Date;
+  fetchedAt?: number;
 }
 
 const ExchangeRate: React.FC<ExchangeRateProps> = ({ source, rate, fetchedAt }) => {
@@ -15,13 +15,14 @@ const ExchangeRate: React.FC<ExchangeRateProps> = ({ source, rate, fetchedAt }) 
   useEffect(() => {
     if (fetchedAt) {
       const calculateElapsedTime = () => {
-        const currentTime = new Date();
-        const fetchedAtTime = new Date(fetchedAt);
-        const elapsedTime = currentTime.getTime() - fetchedAtTime.getTime();
-        console.log('currentTime', currentTime, 'fetchedAt', fetchedAtTime, 'elapsedTime', elapsedTime);
-        const minutes = Math.floor(elapsedTime / 60000);
-        const seconds = Math.floor((elapsedTime % 60000) / 1000);
-        setTimeElapsed(`${minutes}m ${seconds}s`);
+        const now = Date.now();
+        const elapsedTime = Math.round((now - fetchedAt) / 1000);
+        
+        const minutes = Math.floor(elapsedTime / 60);
+        const seconds = elapsedTime % 60;
+
+        const time = (minutes > 0 ? `${minutes}m ` : "") + `${seconds}s`;
+        setTimeElapsed(time);
       };
 
       calculateElapsedTime();
@@ -44,14 +45,14 @@ const ExchangeRate: React.FC<ExchangeRateProps> = ({ source, rate, fetchedAt }) 
 };
 
 interface ExchangeRatesListProps {
-  exchangeRates: { label: string; details: ExchangeRateInfo | null }[];
+  exchangeRates: { label: string; details: TimeSeriesData | null }[];
 }
 
 const ExchangeRatesList: React.FC<ExchangeRatesListProps> = ({ exchangeRates }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {exchangeRates.map(({ label, details }) => (
-        <ExchangeRate key={label} source={label} rate={details?.value} fetchedAt={details?.fetchedAt} />
+        <ExchangeRate key={label} source={label} rate={details?.fxRate} fetchedAt={details?.timestamp} />
       ))}
     </div>
   );

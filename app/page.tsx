@@ -1,7 +1,6 @@
+import { cookies, headers } from 'next/headers';
 import React from 'react';
 import ExchangeRatesList from '../components/ExchangeRatesList'; // Import the client component
-import { ExchangeRateInfo } from './common/model/ExchangeRateInfo';
-import { headers, cookies } from 'next/headers';
 
 export const fetchCache = 'force-no-store'
 
@@ -39,20 +38,28 @@ const fetchExchangeRates = async () => {
 
     const allRates = [{
       label: "Latest",
-      details: new ExchangeRateInfo(latestRateData.value, new Date(latestRateData.fetchedAt)),
+      details: { fxRate: latestRateData.fxRate, timestamp: latestRateData.timestamp },
     },
     {
       label: "DeeMoney",
-      details: new ExchangeRateInfo(latestDeeMoneyRateData.value, new Date(latestDeeMoneyRateData.fetchedAt)),
+      details: { fxRate: latestDeeMoneyRateData.fxRate, timestamp: latestDeeMoneyRateData.timestamp },
     },
     {
       label: "Western Union",
-      details: new ExchangeRateInfo(latestWesternUnionRateData.value, new Date(latestWesternUnionRateData.fetchedAt)),
+      details: { fxRate: latestWesternUnionRateData.fxRate, timestamp: latestWesternUnionRateData.timestamp },
     }];
 
-    const allRatesSorted = allRates.filter(({ details }) => details !== null).sort((a, b) => (b.details?.value ?? 0) - (a.details?.value ?? 0));
+    const roundedOffRates = allRates.map(({ label, details }) => ({
+      label,
+      details: {
+        fxRate: parseFloat(details?.fxRate.toFixed(4)),
+        timestamp: details?.timestamp
+      }
+    }));
 
-    return allRatesSorted;
+    const sortedRates = roundedOffRates.filter(({ details }) => details !== null).sort((a, b) => (b.details?.fxRate ?? 0) - (a.details?.fxRate ?? 0));
+
+    return sortedRates;
   } catch (error) {
     console.error('Error fetching exchange rates:', error);
     return [];
