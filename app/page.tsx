@@ -25,9 +25,9 @@ const fetchExchangeRates = async () => {
     console.log("headers", headers);
 
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
-      fetch(hostname + '/api/getLatestRates', { headers }),
-      fetch(hostname + '/api/getLatestDeeMoneyRates', { headers }),
-      fetch(hostname + '/api/getLatestWesternUnionRates', { headers })
+      fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'latest' }), { headers }),
+      fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'deeMoney' }), { headers }),
+      fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'westernUnion' }), { headers })
     ]);
 
     const [latestRateData, latestDeeMoneyRateData, latestWesternUnionRateData] = await Promise.all([

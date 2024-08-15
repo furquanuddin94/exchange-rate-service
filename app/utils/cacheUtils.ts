@@ -1,3 +1,4 @@
+import { deeMoneyFetch, latestFetch, westernUnionFetch } from "./fetchUtils";
 import FxTimeSeriesDB from "./fxTimeSeriesDb";
 
 const env = process.env.NEXT_PUBLIC_VERCEL_ENV;
@@ -26,21 +27,24 @@ const cacheExpiry = {
     getLatestFxExpiry: cacheExpiryInSeconds,
 };
 
-const cacheConfigMap = {
+export const sourceConfigs: { [key: string]: CacheConfig } = {
     deeMoney: {
         name: 'deemoney fx',
         cacheKey: cacheKeys.getDeeMoneyFxKey,
-        cacheExpiry: cacheExpiry.getDeeMoneyFxExpiry
+        cacheExpiry: cacheExpiry.getDeeMoneyFxExpiry,
+        fetchFresh: deeMoneyFetch
     },
     westernUnion: {
         name: 'western union fx',
         cacheKey: cacheKeys.getWesternUnionFxKey,
-        cacheExpiry: cacheExpiry.getWesternUnionFxExpiry
+        cacheExpiry: cacheExpiry.getWesternUnionFxExpiry,
+        fetchFresh: westernUnionFetch
     },
     latest: {
         name: 'latest fx',
         cacheKey: cacheKeys.getLatestFxKey,
-        cacheExpiry: cacheExpiry.getLatestFxExpiry
+        cacheExpiry: cacheExpiry.getLatestFxExpiry,
+        fetchFresh: latestFetch
     }
 }
 
@@ -48,9 +52,10 @@ interface CacheConfig {
     name: string;
     cacheKey: string;
     cacheExpiry: number;
+    fetchFresh: () => Promise<any>;
 }
 
-export async function cacheFetch(config: CacheConfig, fetchFn: () => Promise<any>) {
+export async function cacheFetch(config: CacheConfig) {
     const cachedData = await FxTimeSeriesDB.getLatestData(config.cacheKey, config.cacheExpiry);
 
     if (cachedData) {
@@ -58,7 +63,7 @@ export async function cacheFetch(config: CacheConfig, fetchFn: () => Promise<any
         return Response.json(cachedData);
     } else {
         console.log(`Fetching ${config.name} from API.`);
-        return fetchFn()
+        return config.fetchFresh()
             .then(async data => {
                 const freshCachedData = await FxTimeSeriesDB.saveFx(config.cacheKey, data);
                 return Response.json(freshCachedData);
@@ -68,6 +73,3 @@ export async function cacheFetch(config: CacheConfig, fetchFn: () => Promise<any
             });
     }
 }
-
-
-export { cacheKeys, cacheExpiry, cacheConfigMap };
