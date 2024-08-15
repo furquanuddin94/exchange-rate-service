@@ -10,7 +10,7 @@ interface ExchangeRateProps {
   fetchedAt?: number;
 }
 
-const ExchangeRate: React.FC<ExchangeRateProps> = ({ source, rate, fetchedAt }) => {
+const FxRateCard: React.FC<ExchangeRateProps> = ({ source, rate, fetchedAt }) => {
   const [timeElapsed, setTimeElapsed] = useState<string>("");
 
   useEffect(() => {
@@ -53,14 +53,14 @@ interface ExchangeRatesListProps {
   exchangeRates: { label: string; details: TimeSeriesData | null }[];
 }
 
-const ExchangeRatesList: React.FC<ExchangeRatesListProps> = ({ exchangeRates }) => {
+const FxRateCards: React.FC<ExchangeRatesListProps> = ({ exchangeRates }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {exchangeRates.map(({ label, details }) => (
-        <ExchangeRate key={label} source={label} rate={details?.fxRate} fetchedAt={details?.timestamp} />
+        <FxRateCard key={label} source={label} rate={details?.fxRate} fetchedAt={details?.timestamp} />
       ))}
     </div>
   );
 };
 
-export default ExchangeRatesList;
+export default FxRateCards;

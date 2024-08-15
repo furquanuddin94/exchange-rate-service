@@ -1,7 +1,7 @@
 import { cookies, headers } from 'next/headers';
 import React from 'react';
-import ExchangeRatesList from '../components/ExchangeRatesList'; // Import the client component
-import { MultiLineChart } from '@/components/MultiLineChart';
+import FxRateCards from '../components/fx-rate-cards'; // Import the client component
+import { MultiLineChart } from '@/components/multi-line-chart';
 import { ModeToggle } from '@/components/mode-toggle';
 
 export const fetchCache = 'force-no-store'
@@ -79,7 +79,7 @@ const Page: React.FC = async () => {
         <ModeToggle /> {/* Aligns the toggle to the right */}
       </div>
       {/* Pass fetched data to the client component */}
-      <ExchangeRatesList exchangeRates={JSON.parse(JSON.stringify(exchangeRates))} />
+      <FxRateCards exchangeRates={JSON.parse(JSON.stringify(exchangeRates))} />
   
       {/* Insert the MultiLineChart component below the cards */}
       <div className="my-8 max-w-2xl mx-auto">
