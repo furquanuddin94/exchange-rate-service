@@ -19,7 +19,7 @@ const cacheKeys = {
     getLatestFxKey: `${cachePrefixString}latest-fx`,
 };
 
-const cacheExpiryInSeconds = env === 'production' ? 300 : 10;
+const cacheExpiryInSeconds = 300;
 
 const cacheExpiry = {
     getDeeMoneyFxExpiry: cacheExpiryInSeconds,
