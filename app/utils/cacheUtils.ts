@@ -1,5 +1,5 @@
 import { deeMoneyFetch, latestFetch, westernUnionFetch } from "./fetchUtils";
-import FxTimeSeriesDB from "./fxTimeSeriesDb";
+import FxTimeSeriesDB, { TimeSeriesData } from "./fxTimeSeriesDb";
 
 const env = process.env.NEXT_PUBLIC_VERCEL_ENV;
 const pullRequestId = process.env.NEXT_PUBLIC_VERCEL_GIT_PULL_REQUEST_ID;
@@ -55,21 +55,18 @@ interface CacheConfig {
     fetchFresh: () => Promise<any>;
 }
 
-export async function cacheFetch(config: CacheConfig) {
+export async function fetchFromCacheOrSource(config: CacheConfig): Promise<TimeSeriesData> {
     const cachedData = await FxTimeSeriesDB.getLatestData(config.cacheKey, config.cacheExpiry);
 
     if (cachedData) {
         console.log(`Serving ${config.name} from cache.`);
-        return Response.json(cachedData);
+        return cachedData;
     } else {
         console.log(`Fetching ${config.name} from API.`);
         return config.fetchFresh()
             .then(async data => {
                 const freshCachedData = await FxTimeSeriesDB.saveFx(config.cacheKey, data);
-                return Response.json(freshCachedData);
-            })
-            .catch(error => {
-                return Response.json({ error: error.message });
+                return freshCachedData;
             });
     }
 }
