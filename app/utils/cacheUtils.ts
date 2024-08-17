@@ -1,3 +1,6 @@
+import { deeMoneyFetch, latestFetch, westernUnionFetch } from "./fetchUtils";
+import FxTimeSeriesDB, { TimeSeriesData } from "./fxTimeSeriesDb";
+
 const env = process.env.NEXT_PUBLIC_VERCEL_ENV;
 const pullRequestId = process.env.NEXT_PUBLIC_VERCEL_GIT_PULL_REQUEST_ID;
 
@@ -16,7 +19,7 @@ const cacheKeys = {
     getLatestFxKey: `${cachePrefixString}latest-fx`,
 };
 
-const cacheExpiryInSeconds = env === 'production' ? 300 : 10;
+const cacheExpiryInSeconds = 300;
 
 const cacheExpiry = {
     getDeeMoneyFxExpiry: cacheExpiryInSeconds,
@@ -24,4 +27,67 @@ const cacheExpiry = {
     getLatestFxExpiry: cacheExpiryInSeconds,
 };
 
-export { cacheKeys, cacheExpiry };
+export const sourceConfigs: { [key: string]: CacheConfig } = {
+    deeMoney: {
+        name: 'deemoney fx',
+        cacheKey: cacheKeys.getDeeMoneyFxKey,
+        cacheExpiry: cacheExpiry.getDeeMoneyFxExpiry,
+        fetchFresh: deeMoneyFetch
+    },
+    westernUnion: {
+        name: 'western union fx',
+        cacheKey: cacheKeys.getWesternUnionFxKey,
+        cacheExpiry: cacheExpiry.getWesternUnionFxExpiry,
+        fetchFresh: westernUnionFetch
+    },
+    latest: {
+        name: 'latest fx',
+        cacheKey: cacheKeys.getLatestFxKey,
+        cacheExpiry: cacheExpiry.getLatestFxExpiry,
+        fetchFresh: latestFetch
+    }
+}
+
+interface CacheConfig {
+    name: string;
+    cacheKey: string;
+    cacheExpiry: number;
+    fetchFresh: () => Promise<any>;
+}
+
+export async function fetchFromCacheOrSource(config: CacheConfig): Promise<TimeSeriesData> {
+    const cachedData = await FxTimeSeriesDB.getLatestData(config.cacheKey, config.cacheExpiry);
+
+    if (cachedData) {
+        console.log(`Serving ${config.name} from cache.`);
+        return cachedData;
+    } else {
+        console.log(`Fetching ${config.name} from API.`);
+        return config.fetchFresh()
+            .then(async data => {
+                const freshCachedData = await FxTimeSeriesDB.saveFx(config.cacheKey, data, Date.now());
+                return freshCachedData;
+            });
+    }
+}
+
+export async function fetchFromSource(config: CacheConfig): Promise<TimeSeriesData> {
+    return config.fetchFresh().then(async data => {
+        const freshCachedData = await FxTimeSeriesDB.saveFx(config.cacheKey, data, Date.now());
+        return freshCachedData;
+    })
+}
+
+export async function fetchTimeSeriesDataPointsFromCache(config: CacheConfig, startTime: number, endTime: number, granularityInMinutes: number): Promise<TimeSeriesData[]> {
+    const dataPoints = await FxTimeSeriesDB.getData(config.cacheKey, startTime, endTime);
+
+    const filteredDataPoints = dataPoints
+        .filter(dataPoint => {
+            const minutesSinceEpoch = Math.floor(dataPoint.timestamp / 1000 / 60);
+            const minuteOffsetFromGranularity = minutesSinceEpoch % granularityInMinutes;
+            return (minuteOffsetFromGranularity <= 1 || minuteOffsetFromGranularity >= granularityInMinutes - 1);
+        })
+
+    return filteredDataPoints;
+
+}

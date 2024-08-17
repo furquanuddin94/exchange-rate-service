@@ -1,7 +1,8 @@
+import { cookies, headers } from 'next/headers';
 import React from 'react';
-import ExchangeRatesList from '../components/ExchangeRatesList'; // Import the client component
-import { ExchangeRateInfo } from './common/model/ExchangeRateInfo';
-import { headers, cookies } from 'next/headers';
+import FxRateCards from '../components/fx-rate-cards'; // Import the client component
+import { MultiLineChart } from '@/components/multi-line-chart';
+import { ModeToggle } from '@/components/mode-toggle';
 
 export const fetchCache = 'force-no-store'
 
@@ -23,12 +24,10 @@ const fetchExchangeRates = async () => {
       cookie: cookie.map(({ name, value }) => `${name}=${value}`).join('; '),
     }
 
-    console.log("headers", headers);
-
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
-      fetch(hostname + '/api/getLatestRates', { headers }),
-      fetch(hostname + '/api/getLatestDeeMoneyRates', { headers }),
-      fetch(hostname + '/api/getLatestWesternUnionRates', { headers })
+      fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'latest' }), { headers }),
+      fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'deeMoney' }), { headers }),
+      fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'westernUnion' }), { headers })
     ]);
 
     const [latestRateData, latestDeeMoneyRateData, latestWesternUnionRateData] = await Promise.all([
@@ -39,35 +38,80 @@ const fetchExchangeRates = async () => {
 
     const allRates = [{
       label: "Latest",
-      details: new ExchangeRateInfo(latestRateData.value, new Date(latestRateData.fetchedAt)),
+      details: { fxRate: latestRateData.fxRate, timestamp: latestRateData.timestamp },
     },
     {
       label: "DeeMoney",
-      details: new ExchangeRateInfo(latestDeeMoneyRateData.value, new Date(latestDeeMoneyRateData.fetchedAt)),
+      details: { fxRate: latestDeeMoneyRateData.fxRate, timestamp: latestDeeMoneyRateData.timestamp },
     },
     {
       label: "Western Union",
-      details: new ExchangeRateInfo(latestWesternUnionRateData.value, new Date(latestWesternUnionRateData.fetchedAt)),
+      details: { fxRate: latestWesternUnionRateData.fxRate, timestamp: latestWesternUnionRateData.timestamp },
     }];
 
-    const allRatesSorted = allRates.filter(({ details }) => details !== null).sort((a, b) => (b.details?.value ?? 0) - (a.details?.value ?? 0));
+    const roundedOffRates = allRates.map(({ label, details }) => ({
+      label,
+      details: {
+        fxRate: parseFloat(details?.fxRate.toFixed(4)),
+        timestamp: details?.timestamp
+      }
+    }));
 
-    return allRatesSorted;
+    const sortedRates = roundedOffRates.filter(({ details }) => details !== null).sort((a, b) => (b.details?.fxRate ?? 0) - (a.details?.fxRate ?? 0));
+
+    return sortedRates;
   } catch (error) {
     console.error('Error fetching exchange rates:', error);
     return [];
   }
 };
 
+const fetchChartData = async () => {
+
+  const host = headers().get('x-forwarded-host') || '';
+  const hostname = host.includes("localhost") ? "http://localhost:3000" : `https://${host}`
+  console.log("Hostname", hostname);
+
+  try {
+    console.log("Fetching chart data from next apis");
+
+    // Get the cookies
+    const cookieStore = cookies();
+    const cookie = cookieStore.getAll();
+
+    const headers = {
+      cookie: cookie.map(({ name, value }) => `${name}=${value}`).join('; '),
+    }
+
+    const chartData = await fetch(hostname + '/api/fetchGraphData', { headers });
+    const chartDataJson = await chartData.json();
+
+    return chartDataJson;
+  } catch (error) {
+    console.error('Error fetching chart data:', error);
+    return [];
+  }
+
+}
+
 // Server Component
 const Page: React.FC = async () => {
-  const exchangeRates = await fetchExchangeRates();
+
+  const [exchangeRates, chartData] = await Promise.all([fetchExchangeRates(), fetchChartData()]);
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Exchange Rates THB/INR</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-3xl font-bold">Exchange Rates THB/INR</h1>
+        <ModeToggle /> {/* Aligns the toggle to the right */}
+      </div>
       {/* Pass fetched data to the client component */}
-      <ExchangeRatesList exchangeRates={JSON.parse(JSON.stringify(exchangeRates))} />
+      <FxRateCards exchangeRates={JSON.parse(JSON.stringify(exchangeRates))} />
+
+      {/* Insert the MultiLineChart component below the cards */}
+      <div className="my-8 max-w-2xl mx-auto">
+        <MultiLineChart chartData={JSON.parse(JSON.stringify(chartData))} />
+      </div>
     </div>
   );
 };
