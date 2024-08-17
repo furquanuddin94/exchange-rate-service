@@ -1,10 +1,10 @@
-import { fetchFromCacheOrSource, sourceConfigs } from "@/app/utils/cacheUtils";
+import { fetchFromCacheOrSource, fetchFromSource, sourceConfigs } from "@/app/utils/cacheUtils";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
     const sources = ["deeMoney", "westernUnion", "latest"];
-    const allFx = await Promise.all(sources.map(source => fetchFromCacheOrSource(sourceConfigs[source])));
+    const allFx = await Promise.all(sources.map(source => fetchFromSource(sourceConfigs[source])));
 
     const fxMap: { [key: string]: any } = {};
     sources.forEach((source, index) => {

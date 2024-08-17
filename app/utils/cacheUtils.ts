@@ -56,7 +56,6 @@ interface CacheConfig {
 }
 
 export async function fetchFromCacheOrSource(config: CacheConfig): Promise<TimeSeriesData> {
-    const requestEpochMilliseconds = Date.now();
     const cachedData = await FxTimeSeriesDB.getLatestData(config.cacheKey, config.cacheExpiry);
 
     if (cachedData) {
@@ -66,10 +65,17 @@ export async function fetchFromCacheOrSource(config: CacheConfig): Promise<TimeS
         console.log(`Fetching ${config.name} from API.`);
         return config.fetchFresh()
             .then(async data => {
-                const freshCachedData = await FxTimeSeriesDB.saveFx(config.cacheKey, data, requestEpochMilliseconds);
+                const freshCachedData = await FxTimeSeriesDB.saveFx(config.cacheKey, data, Date.now());
                 return freshCachedData;
             });
     }
+}
+
+export async function fetchFromSource(config: CacheConfig): Promise<TimeSeriesData> {
+    return config.fetchFresh().then(async data => {
+        const freshCachedData = await FxTimeSeriesDB.saveFx(config.cacheKey, data, Date.now());
+        return freshCachedData;
+    })
 }
 
 export async function fetchTimeSeriesDataPointsFromCache(config: CacheConfig, startTime: number, endTime: number, granularityInMinutes: number): Promise<TimeSeriesData[]> {
