@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   } else if (lookbackInHours <= 6) {
     granularityInMinutes = 15;
   } else if (lookbackInHours <= 24) {
-    granularityInMinutes = 60;
+    granularityInMinutes = 5; //for testing
   } else if (lookbackInHours <= 48) {
     granularityInMinutes = 4 * 60;
   } else {
