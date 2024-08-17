@@ -14,6 +14,8 @@ import {
 import {
   ChartConfig,
   ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
@@ -74,6 +76,7 @@ export function MultiLineChart({ chartData }: any) {
               tickMargin={8}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <ChartLegend content={<ChartLegendContent />} />
             {lineData}
           </LineChart>
         </ChartContainer>
