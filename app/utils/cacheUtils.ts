@@ -83,8 +83,9 @@ export async function fetchTimeSeriesDataPointsFromCache(config: CacheConfig, st
 
     const filteredDataPoints = dataPoints
         .filter(dataPoint => {
-            const epochSeconds = Math.floor(dataPoint.timestamp / 1000);
-            return epochSeconds % granularityInMinutes === 0;
+            const minutesSinceEpoch = Math.floor(dataPoint.timestamp / 1000 / 60);
+            const minuteOffsetFromGranularity = minutesSinceEpoch % granularityInMinutes;
+            return (minuteOffsetFromGranularity <= 1 || minuteOffsetFromGranularity >= granularityInMinutes - 1);
         })
 
     return filteredDataPoints;

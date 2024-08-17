@@ -48,7 +48,12 @@ export async function GET(request: NextRequest) {
   const getFxMap = (datapoints: TimeSeriesData[]) => {
     const fxMap: { [key: string]: any } = {};
     datapoints.forEach(dataPoint => {
-      const timeLabel = getTimeLabel(dataPoint.timestamp);
+      const minutesSinceEpoch = dataPoint.timestamp / 1000 / 60;
+      const minuteOffsetFromGranularity = minutesSinceEpoch % granularityInMinutes;
+      const roundedOffMinutesSinceEpoch = minuteOffsetFromGranularity > granularityInMinutes / 2
+        ? minutesSinceEpoch + granularityInMinutes - minuteOffsetFromGranularity
+        : minutesSinceEpoch - minuteOffsetFromGranularity;
+      const timeLabel = getTimeLabel(roundedOffMinutesSinceEpoch * 60 * 1000);
       fxMap[timeLabel] = dataPoint.fxRate.toFixed(4);
     })
 
