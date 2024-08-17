@@ -1,7 +1,7 @@
 "use client"
 
 import { TrendingUp } from "lucide-react"
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -17,38 +17,44 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-]
 
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "hsl(var(--chart-1))",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
-  },
-} satisfies ChartConfig
 
-export function MultiLineChart() {
+const generateColor = (index: number): string => {
+  const hue = (index * 137.508) % 360; // Use a golden angle approximation for better color distribution
+  return `hsl(${hue}, 70%, 50%)`;
+};
+
+export function MultiLineChart({ chartData }: any) {
+
+  console.log(chartData);
+
+  const keys: string[] = chartData.labels.map((label: { key: string, value: string }) => label.key);
+
+  const chartConfig: ChartConfig = chartData.labels.reduce((config: ChartConfig, label: { key: string, value: string }, index: number) => {
+    config[label.key] = {
+      label: label.value,
+      color: generateColor(index)
+    };
+    return config;
+  }, {} as ChartConfig);
+
+  const lineData = keys.map((key: string) => {
+    return <Line dataKey={key} type="monotone" stroke={chartConfig[key].color} strokeWidth={2} dot={false} />
+  });
+
+  console.log(lineData);
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Line Chart - Multiple</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>FX Comparison</CardTitle>
+        <CardDescription>Last 24 hours</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
           <LineChart
             accessibilityLayer
-            data={chartData}
+            data={chartData.data}
             margin={{
               left: 12,
               right: 12,
@@ -56,31 +62,23 @@ export function MultiLineChart() {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="label"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+            />
+            <YAxis
+              type="number" domain={['auto', 'auto']}
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <Line
-              dataKey="desktop"
-              type="monotone"
-              stroke="var(--color-desktop)"
-              strokeWidth={2}
-              dot={false}
-            />
-            <Line
-              dataKey="mobile"
-              type="monotone"
-              stroke="var(--color-mobile)"
-              strokeWidth={2}
-              dot={false}
-            />
+            {lineData}
           </LineChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
+      {/* <CardFooter>
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
             <div className="flex items-center gap-2 font-medium leading-none">
@@ -91,7 +89,7 @@ export function MultiLineChart() {
             </div>
           </div>
         </div>
-      </CardFooter>
-    </Card>
+      </CardFooter> */}
+    </Card >
   )
 }

@@ -24,8 +24,6 @@ const fetchExchangeRates = async () => {
       cookie: cookie.map(({ name, value }) => `${name}=${value}`).join('; '),
     }
 
-    console.log("headers", headers);
-
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
       fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'latest' }), { headers }),
       fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'deeMoney' }), { headers }),
@@ -68,9 +66,38 @@ const fetchExchangeRates = async () => {
   }
 };
 
+const fetchChartData = async () => {
+
+  const host = headers().get('x-forwarded-host') || '';
+  const hostname = host.includes("localhost") ? "http://localhost:3000" : `https://${host}`
+  console.log("Hostname", hostname);
+
+  try {
+    console.log("Fetching chart data from next apis");
+
+    // Get the cookies
+    const cookieStore = cookies();
+    const cookie = cookieStore.getAll();
+
+    const headers = {
+      cookie: cookie.map(({ name, value }) => `${name}=${value}`).join('; '),
+    }
+
+    const chartData = await fetch(hostname + '/api/fetchGraphData', { headers });
+    const chartDataJson = await chartData.json();
+
+    return chartDataJson;
+  } catch (error) {
+    console.error('Error fetching chart data:', error);
+    return [];
+  }
+
+}
+
 // Server Component
 const Page: React.FC = async () => {
-  const exchangeRates = await fetchExchangeRates();
+
+  const [exchangeRates, chartData] = await Promise.all([fetchExchangeRates(), fetchChartData()]);
 
   return (
     <div className="container mx-auto p-4">
@@ -80,10 +107,10 @@ const Page: React.FC = async () => {
       </div>
       {/* Pass fetched data to the client component */}
       <FxRateCards exchangeRates={JSON.parse(JSON.stringify(exchangeRates))} />
-  
+
       {/* Insert the MultiLineChart component below the cards */}
       <div className="my-8 max-w-2xl mx-auto">
-        <MultiLineChart />
+        <MultiLineChart chartData={JSON.parse(JSON.stringify(chartData))} />
       </div>
     </div>
   );

@@ -13,9 +13,12 @@ const FxTimeSeriesDB = {
      * @param {number} fxRate - The foreign exchange rate to be saved.
      * @return {Promise<TimeSeriesData>} A promise resolving when the data has been saved and returns the saved data.
      */
-    async saveFx(streamKey: string, fxRate: number): Promise<TimeSeriesData> {
+    async saveFx(streamKey: string, fxRate: number, timestamp: number | null): Promise<TimeSeriesData> {
+        // Set the stream id to the timestamp if provided, otherwise use the wildcard
+        const streamId = timestamp ? timestamp + '-*' : '*';
+
         // Save fxRate to the stream and get the entry id
-        const id = await kv.xadd(streamKey, '*', { fxRate: fxRate });
+        const id = await kv.xadd(streamKey, streamId, { fxRate: fxRate });
 
         // Retrieve the saved data using the entry id
         const data = await kv.xrange(streamKey, id, id);
@@ -23,9 +26,9 @@ const FxTimeSeriesDB = {
         // Extract the first (and only) entry
         const [entryId, fields] = Object.entries(data)[0];
 
-        const timestamp = parseInt(entryId.split('-')[0], 10);
+        const cacheTimestamp = parseInt(entryId.split('-')[0], 10);
         const savedData = {
-            timestamp,
+            timestamp: cacheTimestamp,
             fxRate: fields.fxRate as number,
         };
 
