@@ -38,8 +38,8 @@ export function MultiLineChart({ chartData }: any) {
     return config;
   }, {} as ChartConfig);
 
-  const lineData = keys.map((key: string) => {
-    return <Line dataKey={key} type="monotone" stroke={chartConfig[key].color} strokeWidth={2} dot={false} />
+  const lineData = keys.map((key: string, _) => {
+    return <Line key={key} dataKey={key} type="monotone" stroke={chartConfig[key].color} strokeWidth={2} dot={false} />
   });
 
   console.log(lineData);
