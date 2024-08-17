@@ -1,6 +1,8 @@
 import { fetchFromCacheOrSource, fetchFromSource, sourceConfigs } from "@/app/utils/cacheUtils";
 import { NextResponse } from "next/server";
 
+export const fetchCache = 'force-no-store';
+
 export async function GET() {
   try {
     const sources = ["deeMoney", "westernUnion", "latest"];
