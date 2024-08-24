@@ -3,7 +3,7 @@ export const getTimeLabel = (timestamp: number, granularityInMinutes: number): s
     const date = new Date(timestamp);
     let options: Intl.DateTimeFormatOptions;
 
-    if (granularityInMinutes < (4 * 60)) {
+    if (granularityInMinutes < (24 * 60)) {
         options = { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' };
     } else {
         options = { day: 'numeric', month: 'short' };

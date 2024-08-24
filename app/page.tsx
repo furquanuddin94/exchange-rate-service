@@ -77,7 +77,7 @@ const fetchChartData = async () => {
   try {
     console.log("Fetching chart data from next apis");
 
-    const lookbackInHours: number = 2;
+    const lookbackInHours: number = 720; // 30 days
 
     const chartData = await fetch(hostname + '/api/fetchChartData?' + new URLSearchParams({ lookbackInHours: lookbackInHours.toString() }), requestOptions);
     const chartDataJson = await chartData.json();
