@@ -63,7 +63,7 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
     }));
   }, [chartData, dataPoints]);
 
-  const keys = updatedChartData.labels.map((label) => label.key);
+  const keys = updatedChartData.labels?.map((label) => label.key);
 
   const chartConfig: ChartConfig = updatedChartData.labels.reduce(
     (config, label, index) => {
