@@ -1,15 +1,13 @@
+import { constants } from "./envUtils";
 import { deeMoneyFetch, latestFetch, westernUnionFetch } from "./fetchUtils";
 import FxTimeSeriesDB, { TimeSeriesData } from "./fxTimeSeriesDb";
 
-const env = process.env.NEXT_PUBLIC_VERCEL_ENV;
-const pullRequestId = process.env.NEXT_PUBLIC_VERCEL_GIT_PULL_REQUEST_ID;
-
 let cachePrefixArray = [];
-if (env) {
-    cachePrefixArray.push(env);
+if (constants.env) {
+    cachePrefixArray.push(constants.env);
 };
-if (pullRequestId) {
-    cachePrefixArray.push(pullRequestId);
+if (constants.pullRequestId) {
+    cachePrefixArray.push(constants.pullRequestId);
 };
 const cachePrefixString = cachePrefixArray.length > 0 ? `${cachePrefixArray.join('-')}-` : 'local-';
 
@@ -19,7 +17,7 @@ const cacheKeys = {
     getLatestFxKey: `${cachePrefixString}latest-fx`,
 };
 
-const cacheExpiryInSeconds = 300;
+const cacheExpiryInSeconds = 900;
 
 const cacheExpiry = {
     getDeeMoneyFxExpiry: cacheExpiryInSeconds,
@@ -80,6 +78,7 @@ export async function fetchFromSource(config: CacheConfig): Promise<TimeSeriesDa
 
 export async function fetchTimeSeriesDataPointsFromCache(config: CacheConfig, startTime: number, endTime: number): Promise<TimeSeriesData[]> {
     const dataPoints = await FxTimeSeriesDB.getData(config.cacheKey, startTime, endTime);
+    console.log(`Serving chart data from cache.`);
 
     return dataPoints;
 }
