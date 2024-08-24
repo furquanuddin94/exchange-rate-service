@@ -1,4 +1,4 @@
-import { constants } from "./constants";
+import { constants } from "./envUtils";
 import { deeMoneyFetch, latestFetch, westernUnionFetch } from "./fetchUtils";
 import FxTimeSeriesDB, { TimeSeriesData } from "./fxTimeSeriesDb";
 
