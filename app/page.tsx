@@ -10,6 +10,7 @@ const hostname = constants.url;
 const requestOptions: RequestInit = {
   next: {
     tags: ['fxRates'],
+    revalidate: 900
   }
 };
 
