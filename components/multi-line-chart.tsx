@@ -1,13 +1,11 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
+import { CartesianGrid, Label, Line, LineChart, XAxis, YAxis } from "recharts"
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -19,6 +17,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { getTimeLabel } from "@/app/utils/chartUtils";
+import { useEffect, useState } from "react";
 
 
 const generateColor = (index: number): string => {
@@ -28,11 +28,32 @@ const generateColor = (index: number): string => {
 
 export function MultiLineChart({ chartData }: any) {
 
-  console.log(chartData);
+  const dataPoints = 8;
+  const [updatedChartData, setUpdatedChartData] = useState(chartData);
 
-  const keys: string[] = chartData.labels.map((label: { key: string, value: string }) => label.key);
+  useEffect(() => {
+    const lookbackInHours = chartData.lookbackInHours;
+    const granularityInMinutes = (lookbackInHours * 60) / dataPoints;
 
-  const chartConfig: ChartConfig = chartData.labels.reduce((config: ChartConfig, label: { key: string, value: string }, index: number) => {
+    const filteredData = chartData.data
+      .filter((datapoint: { label: string;[key: string]: any }) => (
+        (parseInt(datapoint.label) / 1000 / 60) % granularityInMinutes === 0
+      ))
+
+    console.log
+
+    const dataWithLabels = filteredData.map((datapoint: { label: string;[key: string]: any }) => ({
+      ...datapoint,
+      label: getTimeLabel(parseInt(datapoint.label), granularityInMinutes),
+    }));
+
+    setUpdatedChartData({ ...chartData, data: dataWithLabels });
+  }, [chartData, dataPoints]);
+
+
+  const keys: string[] = updatedChartData.labels.map((label: { key: string, value: string }) => label.key);
+
+  const chartConfig: ChartConfig = updatedChartData.labels.reduce((config: ChartConfig, label: { key: string, value: string }, index: number) => {
     config[label.key] = {
       label: label.value,
       color: generateColor(index)
@@ -44,8 +65,6 @@ export function MultiLineChart({ chartData }: any) {
     return <Line key={key} dataKey={key} type="monotone" stroke={chartConfig[key].color} strokeWidth={2} dot={false} />
   });
 
-  console.log(lineData);
-
   return (
     <Card>
       <CardHeader>
@@ -56,7 +75,7 @@ export function MultiLineChart({ chartData }: any) {
         <ChartContainer config={chartConfig}>
           <LineChart
             accessibilityLayer
-            data={chartData.data}
+            data={updatedChartData.data}
             margin={{
               left: 12,
               right: 12,
