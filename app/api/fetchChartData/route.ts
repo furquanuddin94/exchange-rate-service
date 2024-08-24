@@ -25,7 +25,6 @@ export async function GET(request: NextRequest) {
       const minutesSinceEpoch = timestamp / 1000 / 60;
       const roundedMinutes = Math.round(minutesSinceEpoch);
       const label = roundedMinutes * 60 * 1000;
-
       fxMap[label] = dataPoint.fxRate.toFixed(4);
     })
 
@@ -41,6 +40,7 @@ export async function GET(request: NextRequest) {
   const data = allKeys.map(key => {
     return {
       label: key,
+      readableTime: new Date(parseInt(key)).toLocaleString(),
       deeMoney: deeMoneyFxMap[key],
       westernUnion: westernUnionFxMap[key],
       latest: latestFxMap[key]

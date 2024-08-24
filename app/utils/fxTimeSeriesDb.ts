@@ -44,16 +44,18 @@ const FxTimeSeriesDB = {
      * @return {Promise<TimeSeriesData[]>} A promise resolving to an array of time series data points.
      */
     async getData(streamKey: string, startTime: number, endTime: number): Promise<TimeSeriesData[]> {
-        const results: Record<string, Record<string, unknown>> = await kv.xrange(
+        const results: Record<string, Record<string, unknown>> = await kv.xrevrange(
             streamKey,
-            startTime.toString(),
-            endTime.toString()
+            endTime.toString(),
+            startTime.toString()
         );
 
-        return Object.entries(results).map(([id, fields]) => ({
+        const reverseList = Object.entries(results).map(([id, fields]) => ({
             timestamp: parseInt(id.split('-')[0], 10),
             fxRate: fields.fxRate as number,
         }));
+
+        return reverseList.reverse();
     },
 
     async getLatestData(streamKey: string, maxAgeInSeconds: number): Promise<TimeSeriesData | null> {
