@@ -1,4 +1,5 @@
 import { fetchFromCacheOrSource, fetchFromSource, sourceConfigs } from "@/app/utils/cacheUtils";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 export const fetchCache = 'force-no-store';
@@ -14,6 +15,7 @@ export async function GET() {
     });
 
     console.log("All FX rates fetched");
+    revalidateTag('fxRates');
     return NextResponse.json(fxMap);
   } catch (error) {
     console.error("Error fetching FX rates:", error);

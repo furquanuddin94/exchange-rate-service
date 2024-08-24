@@ -19,7 +19,7 @@ const cacheKeys = {
     getLatestFxKey: `${cachePrefixString}latest-fx`,
 };
 
-const cacheExpiryInSeconds = 300;
+const cacheExpiryInSeconds = 900;
 
 const cacheExpiry = {
     getDeeMoneyFxExpiry: cacheExpiryInSeconds,

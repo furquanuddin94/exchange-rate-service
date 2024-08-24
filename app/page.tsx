@@ -1,11 +1,8 @@
+import { ModeToggle } from '@/components/mode-toggle';
+import { MultiLineChart } from '@/components/multi-line-chart';
 import { cookies, headers } from 'next/headers';
 import React from 'react';
 import FxRateCards from '../components/fx-rate-cards'; // Import the client component
-import { MultiLineChart } from '@/components/multi-line-chart';
-import { ModeToggle } from '@/components/mode-toggle';
-import { getTimeLabel } from './utils/chartUtils';
-
-export const fetchCache = 'force-no-store'
 
 // Fetch data on the server side̥̥̥̥̥̥̥̥ ̥
 const fetchExchangeRates = async () => {
@@ -25,10 +22,17 @@ const fetchExchangeRates = async () => {
       cookie: cookie.map(({ name, value }) => `${name}=${value}`).join('; '),
     }
 
+    const requestOptions: RequestInit = {
+      headers: headers,
+      next: {
+        tags: ['fxRates'],
+      }
+    };
+
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
-      fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'latest' }), { headers }),
-      fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'deeMoney' }), { headers }),
-      fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'westernUnion' }), { headers })
+      fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'latest' }), requestOptions),
+      fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'deeMoney' }), requestOptions),
+      fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'westernUnion' }), requestOptions)
     ]);
 
     const [latestRateData, latestDeeMoneyRateData, latestWesternUnionRateData] = await Promise.all([
@@ -84,9 +88,16 @@ const fetchChartData = async () => {
       cookie: cookie.map(({ name, value }) => `${name}=${value}`).join('; '),
     }
 
+    const requestOptions: RequestInit = {
+      headers: headers,
+      next: {
+        tags: ['fxRates'],
+      }
+    };
+
     const lookbackInHours: number = 2;
 
-    const chartData = await fetch(hostname + '/api/fetchChartData?' + new URLSearchParams({ lookbackInHours: lookbackInHours.toString() }), { headers });
+    const chartData = await fetch(hostname + '/api/fetchChartData?' + new URLSearchParams({ lookbackInHours: lookbackInHours.toString() }), requestOptions);
     const chartDataJson = await chartData.json();
 
     return chartDataJson;
