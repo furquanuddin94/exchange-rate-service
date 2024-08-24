@@ -4,6 +4,7 @@ import { MultiLineChart } from '@/components/multi-line-chart';
 import React from 'react';
 import FxRateCards from '../components/fx-rate-cards'; // Import the client component
 import { constants } from './utils/envUtils';
+export const dynamic = 'force-dynamic';
 
 const hostname = constants.url;
 
