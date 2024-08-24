@@ -1,14 +1,21 @@
 "use client"
 
-import { useEffect, useState } from "react";
-import { CartesianGrid, Label, Line, LineChart, XAxis, YAxis } from "recharts";
+import { useEffect, useState } from "react"
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import {
   ChartConfig,
   ChartContainer,
@@ -16,38 +23,45 @@ import {
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
-import { getTimeLabel } from "@/app/utils/chartUtils";
+} from "@/components/ui/chart"
+import { getTimeLabel } from "@/app/utils/chartUtils"
 
 type ChartDataPoint = {
-  label: string;
-  [key: string]: any;
-};
+  label: string
+  [key: string]: any
+}
 
 type ChartData = {
-  lookbackInHours: number;
-  data: ChartDataPoint[];
-  labels: { key: string; value: string }[];
-};
+  data: ChartDataPoint[]
+  labels: { key: string; value: string }[]
+}
 
 type MultiLineChartProps = {
-  chartData: ChartData;
-};
+  chartData: ChartData
+}
 
 const generateColor = (index: number): string => {
-  const hue = (index * 137.508) % 360; // Golden angle approximation for color distribution
-  return `hsl(${hue}, 70%, 50%)`;
-};
+  const hue = (index * 137.508) % 360
+  return `hsl(${hue}, 70%, 50%)`
+}
+
+const lookbackOptions = [
+  { value: "24", label: "Last 24 hours" },
+  { value: "96", label: "Last 4 days" },
+  { value: "168", label: "Last 7 days" },
+  { value: "720", label: "Last 30 days" },
+]
 
 export function MultiLineChart({ chartData }: MultiLineChartProps) {
-  const dataPoints = 8;
-  const [updatedChartData, setUpdatedChartData] = useState(chartData);
+  const [lookback, setLookback] = useState("24")
+  const [updatedChartData, setUpdatedChartData] = useState(chartData)
 
   useEffect(() => {
-    const { lookbackInHours, data } = chartData;
-    const granularityInMinutes = (lookbackInHours * 60) / dataPoints;
+    const lookbackInHours = parseInt(lookback)
+    const dataPoints = 8
+    const granularityInMinutes = (lookbackInHours * 60) / dataPoints
 
-    const filteredData = data.filter((datapoint) => {
+    const filteredData = chartData.data.filter((datapoint) => {
       const minutes = parseInt(datapoint.label) / 1000 / 60;
       return minutes % granularityInMinutes === 0;
     });
@@ -55,32 +69,53 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
     const dataWithLabels = filteredData.map((datapoint) => ({
       ...datapoint,
       label: getTimeLabel(parseInt(datapoint.label), granularityInMinutes),
-    }));
+    }))
 
     setUpdatedChartData((prev) => ({
       ...prev,
       data: dataWithLabels,
-    }));
-  }, [chartData, dataPoints]);
+    }))
+  }, [chartData, lookback])
 
-  const keys = updatedChartData.labels?.map((label) => label.key);
+  const keys = updatedChartData.labels?.map((label) => label.key)
 
   const chartConfig: ChartConfig = updatedChartData.labels.reduce(
     (config, label, index) => {
       config[label.key] = {
         label: label.value,
         color: generateColor(index),
-      };
-      return config;
+      }
+      return config
     },
     {} as ChartConfig
-  );
+  )
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>FX Comparison</CardTitle>
-        <CardDescription>Last 24 hours</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>FX Comparison</CardTitle>
+            <CardDescription>
+              {lookbackOptions.find((option) => option.value === lookback)?.label}
+            </CardDescription>
+          </div>
+          <Select
+            value={lookback}
+            onValueChange={setLookback}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select time range" />
+            </SelectTrigger>
+            <SelectContent>
+              {lookbackOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -108,5 +143,5 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
         </ChartContainer>
       </CardContent>
     </Card>
-  );
+  )
 }

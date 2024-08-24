@@ -4,6 +4,7 @@ import { MultiLineChart } from '@/components/multi-line-chart';
 import React from 'react';
 import FxRateCards from '../components/fx-rate-cards'; // Import the client component
 import { constants } from './utils/envUtils';
+export const dynamic = 'force-dynamic';
 
 const hostname = constants.url;
 
@@ -77,7 +78,7 @@ const fetchChartData = async () => {
   try {
     console.log("Fetching chart data from next apis");
 
-    const lookbackInHours: number = 2;
+    const lookbackInHours: number = 720; // 30 days
 
     const chartData = await fetch(hostname + '/api/fetchChartData?' + new URLSearchParams({ lookbackInHours: lookbackInHours.toString() }), requestOptions);
     const chartDataJson = await chartData.json();
