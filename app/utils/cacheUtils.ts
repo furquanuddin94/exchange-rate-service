@@ -1,12 +1,13 @@
+import { constants } from "./constants";
 import { deeMoneyFetch, latestFetch, westernUnionFetch } from "./fetchUtils";
 import FxTimeSeriesDB, { TimeSeriesData } from "./fxTimeSeriesDb";
 
 let cachePrefixArray = [];
-if (env) {
-    cachePrefixArray.push(env);
+if (constants.env) {
+    cachePrefixArray.push(constants.env);
 };
-if (pullRequestId) {
-    cachePrefixArray.push(pullRequestId);
+if (constants.pullRequestId) {
+    cachePrefixArray.push(constants.pullRequestId);
 };
 const cachePrefixString = cachePrefixArray.length > 0 ? `${cachePrefixArray.join('-')}-` : 'local-';
 

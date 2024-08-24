@@ -3,6 +3,7 @@ import { MultiLineChart } from '@/components/multi-line-chart';
 import { cookies, headers } from 'next/headers';
 import React from 'react';
 import FxRateCards from '../components/fx-rate-cards'; // Import the client component
+import { constants } from './utils/constants';
 
 // Fetch data on the server side̥̥̥̥̥̥̥̥ ̥
 const fetchExchangeRates = async () => {
@@ -27,8 +28,8 @@ const fetchExchangeRates = async () => {
         tags: ['fxRates'],
       }
     };
-    console.log("env", process.env.env);
-    if (process.env.env !== 'production') {
+    console.log("env", constants.env);
+    if (constants.env !== 'production') {
       requestOptions.headers = headers;
     }
 
@@ -96,7 +97,7 @@ const fetchChartData = async () => {
         tags: ['fxRates'],
       }
     };
-    if (process.env.env !== 'production') {
+    if (constants.env !== 'production') {
       requestOptions.headers = headers;
     }
 
