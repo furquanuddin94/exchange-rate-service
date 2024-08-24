@@ -80,6 +80,7 @@ export async function fetchFromSource(config: CacheConfig): Promise<TimeSeriesDa
 
 export async function fetchTimeSeriesDataPointsFromCache(config: CacheConfig, startTime: number, endTime: number): Promise<TimeSeriesData[]> {
     const dataPoints = await FxTimeSeriesDB.getData(config.cacheKey, startTime, endTime);
+    console.log(`Serving chart data from cache.`);
 
     return dataPoints;
 }
