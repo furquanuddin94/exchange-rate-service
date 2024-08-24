@@ -27,7 +27,8 @@ const fetchExchangeRates = async () => {
         tags: ['fxRates'],
       }
     };
-    if (env !== 'production') {
+    console.log("env", process.env.env);
+    if (process.env.env !== 'production') {
       requestOptions.headers = headers;
     }
 
@@ -95,7 +96,7 @@ const fetchChartData = async () => {
         tags: ['fxRates'],
       }
     };
-    if (env !== 'production') {
+    if (process.env.env !== 'production') {
       requestOptions.headers = headers;
     }
 
