@@ -23,11 +23,13 @@ const fetchExchangeRates = async () => {
     }
 
     const requestOptions: RequestInit = {
-      headers: headers,
       next: {
         tags: ['fxRates'],
       }
     };
+    if (env !== 'production') {
+      requestOptions.headers = headers;
+    }
 
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
       fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'latest' }), requestOptions),
@@ -89,11 +91,13 @@ const fetchChartData = async () => {
     }
 
     const requestOptions: RequestInit = {
-      headers: headers,
       next: {
         tags: ['fxRates'],
       }
     };
+    if (env !== 'production') {
+      requestOptions.headers = headers;
+    }
 
     const lookbackInHours: number = 2;
 

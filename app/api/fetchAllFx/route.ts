@@ -1,4 +1,4 @@
-import { fetchFromCacheOrSource, fetchFromSource, sourceConfigs } from "@/app/utils/cacheUtils";
+import { fetchFromSource, sourceConfigs } from "@/app/utils/cacheUtils";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 

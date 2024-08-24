@@ -1,9 +1,6 @@
 import { deeMoneyFetch, latestFetch, westernUnionFetch } from "./fetchUtils";
 import FxTimeSeriesDB, { TimeSeriesData } from "./fxTimeSeriesDb";
 
-const env = process.env.NEXT_PUBLIC_VERCEL_ENV;
-const pullRequestId = process.env.NEXT_PUBLIC_VERCEL_GIT_PULL_REQUEST_ID;
-
 let cachePrefixArray = [];
 if (env) {
     cachePrefixArray.push(env);
