@@ -3,6 +3,7 @@ import React from 'react';
 import FxRateCards from '../components/fx-rate-cards'; // Import the client component
 import { MultiLineChart } from '@/components/multi-line-chart';
 import { ModeToggle } from '@/components/mode-toggle';
+import { getTimeLabel } from './utils/chartUtils';
 
 export const fetchCache = 'force-no-store'
 
@@ -83,7 +84,9 @@ const fetchChartData = async () => {
       cookie: cookie.map(({ name, value }) => `${name}=${value}`).join('; '),
     }
 
-    const chartData = await fetch(hostname + '/api/fetchGraphData', { headers });
+    const lookbackInHours: number = 2;
+
+    const chartData = await fetch(hostname + '/api/fetchChartData?' + new URLSearchParams({ lookbackInHours: lookbackInHours.toString() }), { headers });
     const chartDataJson = await chartData.json();
 
     return chartDataJson;

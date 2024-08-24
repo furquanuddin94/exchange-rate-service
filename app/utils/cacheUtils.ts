@@ -78,16 +78,8 @@ export async function fetchFromSource(config: CacheConfig): Promise<TimeSeriesDa
     })
 }
 
-export async function fetchTimeSeriesDataPointsFromCache(config: CacheConfig, startTime: number, endTime: number, granularityInMinutes: number): Promise<TimeSeriesData[]> {
+export async function fetchTimeSeriesDataPointsFromCache(config: CacheConfig, startTime: number, endTime: number): Promise<TimeSeriesData[]> {
     const dataPoints = await FxTimeSeriesDB.getData(config.cacheKey, startTime, endTime);
 
-    const filteredDataPoints = dataPoints
-        .filter(dataPoint => {
-            const minutesSinceEpoch = Math.floor(dataPoint.timestamp / 1000 / 60);
-            const minuteOffsetFromGranularity = minutesSinceEpoch % granularityInMinutes;
-            return (minuteOffsetFromGranularity <= 1 || minuteOffsetFromGranularity >= granularityInMinutes - 1);
-        })
-
-    return filteredDataPoints;
-
+    return dataPoints;
 }
