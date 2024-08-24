@@ -1,37 +1,45 @@
 import { ModeToggle } from '@/components/mode-toggle';
 import { MultiLineChart } from '@/components/multi-line-chart';
-import { cookies, headers } from 'next/headers';
+// import { cookies, headers } from 'next/headers';
 import React from 'react';
 import FxRateCards from '../components/fx-rate-cards'; // Import the client component
 import { constants } from './utils/constants';
+import { headers } from 'next/headers';
+export const dynamic = 'force-dynamic';
 
 // Fetch data on the server side̥̥̥̥̥̥̥̥ ̥
 const fetchExchangeRates = async () => {
 
-  const host = headers().get('x-forwarded-host') || '';
-  const hostname = host.includes("localhost") ? "http://localhost:3000" : `https://${host}`
-  console.log("Hostname", hostname);
+  let hostname = 'http://localhost:3000';
+  console.log("Environment", constants.env);
+  // if(constants.env !== 'local') {
+  //   const host = headers().get('x-forwarded-host') || '';
+  //   const hostname = host.includes("localhost") ? "http://localhost:3000" : `https://${host}`
+  //   // const hostname = "http://localhost:3000"
+  //   console.log("Hostname", hostname);
+  // }
+
 
   try {
     console.log("Fetching exchange rates from next apis");
 
     // Get the cookies
-    const cookieStore = cookies();
-    const cookie = cookieStore.getAll();
+    // const cookieStore = cookies();
+    // const cookie = cookieStore.getAll();
 
-    const headers = {
-      cookie: cookie.map(({ name, value }) => `${name}=${value}`).join('; '),
-    }
+    // const headers = {
+    //   cookie: cookie.map(({ name, value }) => `${name}=${value}`).join('; '),
+    // }
 
     const requestOptions: RequestInit = {
       next: {
         tags: ['fxRates'],
       }
     };
-    console.log("env", constants.env);
-    if (constants.env !== 'production') {
-      requestOptions.headers = headers;
-    }
+    // console.log("env", constants.env);
+    // if (constants.env !== 'production') {
+    //   requestOptions.headers = headers;
+    // }
 
     const [latestRateResponse, latestDeeMoneyRateResponse, latestWesternUnionRateResponse] = await Promise.all([
       fetch(hostname + '/api/fetchFx?' + new URLSearchParams({ source: 'latest' }), requestOptions),
@@ -77,29 +85,29 @@ const fetchExchangeRates = async () => {
 
 const fetchChartData = async () => {
 
-  const host = headers().get('x-forwarded-host') || '';
-  const hostname = host.includes("localhost") ? "http://localhost:3000" : `https://${host}`
-  console.log("Hostname", hostname);
+  // const host = headers().get('x-forwarded-host') || '';
+  //const hostname = host.includes("localhost") ? "http://localhost:3000" : `https://${host}`
+  const hostname = "http://localhost:3000"
 
   try {
     console.log("Fetching chart data from next apis");
 
     // Get the cookies
-    const cookieStore = cookies();
-    const cookie = cookieStore.getAll();
+    // const cookieStore = cookies();
+    // const cookie = cookieStore.getAll();
 
-    const headers = {
-      cookie: cookie.map(({ name, value }) => `${name}=${value}`).join('; '),
-    }
+    // const headers = {
+    //   cookie: cookie.map(({ name, value }) => `${name}=${value}`).join('; '),
+    // }
 
     const requestOptions: RequestInit = {
       next: {
         tags: ['fxRates'],
       }
     };
-    if (constants.env !== 'production') {
-      requestOptions.headers = headers;
-    }
+    // if (constants.env !== 'production') {
+    //   requestOptions.headers = headers;
+    // }
 
     const lookbackInHours: number = 2;
 
