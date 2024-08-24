@@ -1,10 +1,8 @@
 import { ModeToggle } from '@/components/mode-toggle';
 import { MultiLineChart } from '@/components/multi-line-chart';
-// import { cookies, headers } from 'next/headers';
 import React from 'react';
-import FxRateCards from '../components/fx-rate-cards'; // Import the client component
+import FxRateCards from '../components/fx-rate-cards';
 import { constants } from './utils/envUtils';
-export const dynamic = 'force-dynamic';
 
 const hostname = constants.url;
 
