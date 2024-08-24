@@ -61,7 +61,12 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
     const dataPoints = 8
     const granularityInMinutes = (lookbackInHours * 60) / dataPoints
 
+    const currentTime = Date.now();
+
     const filteredData = chartData.data.filter((datapoint) => {
+      const isInRange = parseInt(datapoint.label) >= currentTime - lookbackInHours * 60 * 60 * 1000;
+      if (!isInRange) return false;
+
       const minutes = parseInt(datapoint.label) / 1000 / 60;
       return minutes % granularityInMinutes === 0;
     });
