@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import React, { ReactNode, useEffect, useState } from "react"
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 import {
   Card,
@@ -20,7 +20,6 @@ import {
   ChartConfig,
   ChartContainer,
   ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
@@ -28,7 +27,7 @@ import { getTimeLabel } from "@/app/utils/chartUtils"
 
 type ChartDataPoint = {
   label: string
-  [key: string]: any
+  [key: string]: string | number
 }
 
 type ChartData = {
@@ -38,6 +37,13 @@ type ChartData = {
 
 type MultiLineChartProps = {
   chartData: ChartData
+}
+
+type CustomLegendItemProps = {
+  color: string
+  label: ReactNode
+  onClick: () => void
+  isVisible: boolean
 }
 
 const generateColor = (index: number): string => {
@@ -52,9 +58,33 @@ const lookbackOptions = [
   { value: "720", label: "Last 30 days" },
 ]
 
+const CustomLegendItem: React.FC<CustomLegendItemProps> = ({ color, label, onClick, isVisible }) => (
+  <div 
+    onClick={onClick} 
+    style={{ 
+      cursor: 'pointer', 
+      opacity: isVisible ? 1 : 0.5,
+      display: 'flex',
+      alignItems: 'center',
+      marginRight: '0.5rem',
+    }}
+  >
+    <div 
+      style={{ 
+        width: '10px',  // Slightly smaller box size
+        height: '10px', 
+        backgroundColor: color,
+        marginRight: '0.25rem'  // Reduced margin between color box and label
+      }} 
+    />
+    <span>{label}</span>
+  </div>
+);
+
 export function MultiLineChart({ chartData }: MultiLineChartProps) {
-  const [lookback, setLookback] = useState("24")
-  const [updatedChartData, setUpdatedChartData] = useState(chartData)
+  const [lookback, setLookback] = useState<string>("24")
+  const [updatedChartData, setUpdatedChartData] = useState<ChartData>(chartData)
+  const [visibleLines, setVisibleLines] = useState<{ [key: string]: boolean }>({})
 
   useEffect(() => {
     const lookbackInHours = parseInt(lookback)
@@ -70,7 +100,6 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
       if (!isInRange) return false;
 
       const epochMins = parseInt(datapoint.label) / 1000 / 60;
-      // get local mins by adjusting for timezone
       const localMins = epochMins - timeZoneOffsetInMinutes;
       return localMins % granularityInMinutes === 0;
     });
@@ -86,6 +115,14 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
     }))
   }, [chartData, lookback])
 
+  useEffect(() => {
+    const initialVisibility = updatedChartData.labels.reduce((acc, label) => {
+      acc[label.key] = true;
+      return acc;
+    }, {} as { [key: string]: boolean });
+    setVisibleLines(initialVisibility);
+  }, [updatedChartData.labels]);
+
   const keys = updatedChartData.labels?.map((label) => label.key)
 
   const chartConfig: ChartConfig = updatedChartData.labels.reduce(
@@ -98,6 +135,36 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
     },
     {} as ChartConfig
   )
+
+  const handleLegendClick = (dataKey: string) => {
+    setVisibleLines((prev) => ({
+      ...prev,
+      [dataKey]: !prev[dataKey],
+    }));
+  };
+
+  const CustomLegendContent: React.FC = () => (
+    <div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '0.5rem',  // Reduced gap between rows
+        justifyContent: 'center', // Centers the legend items horizontally
+        marginTop: '1rem',  // Added top margin to the legend
+      }}
+    >
+      {Object.entries(chartConfig).map(([key, config]) => (
+        <CustomLegendItem
+          key={key}
+          label={config.label}
+          color={config.color as string}
+          onClick={() => handleLegendClick(key)}
+          isVisible={visibleLines[key]}
+        />
+      ))}
+    </div>
+  );
+  
 
   return (
     <Card>
@@ -137,16 +204,18 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
             <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} />
             <YAxis type="number" domain={['auto', 'auto']} tickLine={false} axisLine={false} tickMargin={8} />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <ChartLegend content={<ChartLegendContent />} />
+            <ChartLegend content={<CustomLegendContent />} />
             {keys.map((key) => (
-              <Line
-                key={key}
-                dataKey={key}
-                type="monotone"
-                stroke={chartConfig[key].color}
-                strokeWidth={2}
-                dot={false}
-              />
+              visibleLines[key] && (
+                <Line
+                  key={key}
+                  dataKey={key}
+                  type="monotone"
+                  stroke={chartConfig[key].color}
+                  strokeWidth={2}
+                  dot={false}
+                />
+              )
             ))}
           </LineChart>
         </ChartContainer>
