@@ -64,11 +64,13 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
     const currentTime = Date.now();
 
     const filteredData = chartData.data.filter((datapoint) => {
-      const isInRange = parseInt(datapoint.label) >= currentTime - (lookbackInHours+1) * 60 * 60 * 1000;
+      const isInRange = parseInt(datapoint.label) >= currentTime - (lookbackInHours+2) * 60 * 60 * 1000;
       if (!isInRange) return false;
 
-      const minutes = parseInt(datapoint.label) / 1000 / 60;
-      return minutes % granularityInMinutes === 0;
+      const epochMins = parseInt(datapoint.label) / 1000 / 60;
+      // get local mins by adjusting for timezone
+      const localMins = epochMins - (new Date().getTimezoneOffset());
+      return localMins % granularityInMinutes === 0;
     });
 
     const dataWithLabels = filteredData.map((datapoint) => ({
