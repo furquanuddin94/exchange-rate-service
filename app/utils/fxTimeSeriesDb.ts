@@ -74,26 +74,7 @@ const FxTimeSeriesDB = {
             return data
         }
         return null
-    },
-
-    /**
-     * Retrieves aggregated time series data from the database.
-     *
-     * @param {string} streamKey - The key identifying the stream of time series data.
-     * @param {number} startTime - The start time of the range (inclusive).
-     * @param {number} endTime - The end time of the range (inclusive).
-     * @param {(data: TimeSeriesData[]) => number} aggregation - A function to aggregate the retrieved time series data.
-     * @return {Promise<number>} A promise resolving to the aggregated value.
-     */
-    async getAggregatedData(
-        streamKey: string,
-        startTime: number,
-        endTime: number,
-        aggregation: (data: TimeSeriesData[]) => number
-    ): Promise<number> {
-        const data = await this.getData(streamKey, startTime, endTime);
-        return aggregation(data);
-    },
+    }
 };
 
 export default FxTimeSeriesDB;

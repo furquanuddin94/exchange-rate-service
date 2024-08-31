@@ -24,6 +24,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { getTimeLabel } from "@/app/utils/chartUtils"
+import { TimeSeriesData } from "@/app/utils/fxTimeSeriesDb"
 
 type ChartDataPoint = {
   label: string
@@ -33,10 +34,6 @@ type ChartDataPoint = {
 type ChartData = {
   data: ChartDataPoint[]
   labels: { key: string; value: string }[]
-}
-
-type MultiLineChartProps = {
-  chartData: ChartData
 }
 
 type CustomLegendItemProps = {
@@ -59,71 +56,107 @@ const lookbackOptions = [
 ]
 
 const CustomLegendItem: React.FC<CustomLegendItemProps> = ({ color, label, onClick, isVisible }) => (
-  <div 
-    onClick={onClick} 
-    style={{ 
-      cursor: 'pointer', 
+  <div
+    onClick={onClick}
+    style={{
+      cursor: 'pointer',
       opacity: isVisible ? 1 : 0.5,
       display: 'flex',
       alignItems: 'center',
       marginRight: '0.5rem',
     }}
   >
-    <div 
-      style={{ 
+    <div
+      style={{
         width: '10px',  // Slightly smaller box size
-        height: '10px', 
+        height: '10px',
         backgroundColor: color,
         marginRight: '0.25rem'  // Reduced margin between color box and label
-      }} 
+      }}
     />
     <span>{label}</span>
   </div>
 );
 
-export function MultiLineChart({ chartData }: MultiLineChartProps) {
+type SourceData = {
+  source: string;
+  data: TimeSeriesData[];
+}
+
+type MultiLineChartProps = {
+  allSourceData: SourceData[];
+}
+
+export function MultiLineChart({ allSourceData }: MultiLineChartProps) {
   const [lookback, setLookback] = useState<string>("24")
-  const [updatedChartData, setUpdatedChartData] = useState<ChartData>(chartData)
+  const [updatedChartData, setUpdatedChartData] = useState<ChartData | null>(null)
   const [visibleLines, setVisibleLines] = useState<{ [key: string]: boolean }>({})
 
   useEffect(() => {
     const lookbackInHours = parseInt(lookback)
     const dataPoints = 8
-    const granularityInMinutes = (lookbackInHours * 60) / dataPoints
+    const granularity = (lookbackInHours * 60 * 60 * 1000) / dataPoints
 
-    const currentTime = Date.now();
+    const currentDateTime = new Date();
+    const timeZoneOffset = currentDateTime.getTimezoneOffset() * 60 * 1000;
 
-    const timeZoneOffsetInMinutes = new Date().getTimezoneOffset();
+    const accumulatedData: { [roundedTimestamp: number]: any } = {};
 
-    const filteredData = chartData.data.filter((datapoint) => {
-      const isInRange = parseInt(datapoint.label) >= currentTime - (lookbackInHours+2) * 60 * 60 * 1000;
-      if (!isInRange) return false;
+    allSourceData.forEach((sourceData) => {
+      sourceData.data.forEach((dataPoint) => {
+        if (currentDateTime.getTime() - dataPoint.timestamp > (lookbackInHours) * 60 * 60 * 1000) {
+          return;
+        }
 
-      const epochMins = parseInt(datapoint.label) / 1000 / 60;
-      const localMins = epochMins - timeZoneOffsetInMinutes;
-      return localMins % granularityInMinutes === 0;
+        const localTime = dataPoint.timestamp - timeZoneOffset;
+        const roundedlocalTime = Math.floor(localTime / granularity) * granularity;
+        const epochTime = roundedlocalTime + timeZoneOffset;
+
+        if (!accumulatedData[epochTime]) {
+          accumulatedData[epochTime] = { label: '', fxRates: {} };
+        }
+
+        accumulatedData[epochTime].fxRates[sourceData.source] = Math.max(
+          accumulatedData[epochTime].fxRates[sourceData.source] || 0,
+          parseFloat(dataPoint.fxRate.toFixed(4))
+        );
+      });
     });
 
-    const dataWithLabels = filteredData.map((datapoint) => ({
-      ...datapoint,
-      label: getTimeLabel(parseInt(datapoint.label), granularityInMinutes),
-    }))
+    const sortedDataPoints: ChartDataPoint[] = Object.keys(accumulatedData)
+      .map(Number)
+      .sort((a, b) => a - b)
+      .map((epochTime) => {
+        const label = getTimeLabel(epochTime, granularity / (60 * 1000));
+        return {
+          label: label,
+          ...accumulatedData[epochTime].fxRates
+        };
+      });
 
-    setUpdatedChartData((prev) => ({
-      ...prev,
-      data: dataWithLabels,
-    }))
-  }, [chartData, lookback])
+    const labels = allSourceData.map((sourceData) => sourceData.source);
+
+    setUpdatedChartData({
+      data: sortedDataPoints,
+      labels: labels.map((label) => ({ key: label, value: label }))
+    });
+  }, [lookback, allSourceData]);
 
   useEffect(() => {
-    const initialVisibility = updatedChartData.labels.reduce((acc, label) => {
-      acc[label.key] = true;
-      return acc;
-    }, {} as { [key: string]: boolean });
-    setVisibleLines(initialVisibility);
-  }, [updatedChartData.labels]);
+    if (updatedChartData) {
+      const initialVisibility = updatedChartData.labels.reduce((acc, label) => {
+        acc[label.key] = true;
+        return acc;
+      }, {} as { [key: string]: boolean });
+      setVisibleLines(initialVisibility);
+    }
+  }, [updatedChartData]);
 
-  const keys = updatedChartData.labels?.map((label) => label.key)
+  if (!updatedChartData) {
+    return null;
+  }
+
+  const keys = updatedChartData.labels.map((label) => label.key);
 
   const chartConfig: ChartConfig = updatedChartData.labels.reduce(
     (config, label, index) => {
@@ -131,10 +164,10 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
         label: label.value,
         color: generateColor(index),
       }
-      return config
+      return config;
     },
     {} as ChartConfig
-  )
+  );
 
   const handleLegendClick = (dataKey: string) => {
     setVisibleLines((prev) => ({
@@ -148,9 +181,9 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
       style={{
         display: 'flex',
         flexWrap: 'wrap',
-        gap: '0.5rem',  // Reduced gap between rows
-        justifyContent: 'center', // Centers the legend items horizontally
-        marginTop: '1rem',  // Added top margin to the legend
+        gap: '0.5rem',
+        justifyContent: 'center',
+        marginTop: '1rem',
       }}
     >
       {Object.entries(chartConfig).map(([key, config]) => (
@@ -164,7 +197,6 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
       ))}
     </div>
   );
-  
 
   return (
     <Card>
@@ -202,8 +234,8 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
           >
             <CartesianGrid vertical={false} />
             <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} />
-            <YAxis type="number" domain={['auto', 'auto']} tickLine={false} axisLine={false} tickMargin={8} />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <YAxis type="number" domain={['auto', 'auto']} tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(tick) => tick.toFixed(4)} />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent  />} />
             <ChartLegend content={<CustomLegendContent />} />
             {keys.map((key) => (
               visibleLines[key] && (
@@ -221,5 +253,5 @@ export function MultiLineChart({ chartData }: MultiLineChartProps) {
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -27,19 +27,19 @@ const cacheExpiry = {
 
 export const sourceConfigs: { [key: string]: CacheConfig } = {
     deeMoney: {
-        name: 'deemoney fx',
+        sourceName: 'DeeMoney',
         cacheKey: cacheKeys.getDeeMoneyFxKey,
         cacheExpiry: cacheExpiry.getDeeMoneyFxExpiry,
         fetchFresh: deeMoneyFetch
     },
     westernUnion: {
-        name: 'western union fx',
+        sourceName: 'Western Union',
         cacheKey: cacheKeys.getWesternUnionFxKey,
         cacheExpiry: cacheExpiry.getWesternUnionFxExpiry,
         fetchFresh: westernUnionFetch
     },
     latest: {
-        name: 'latest fx',
+        sourceName: 'Latest',
         cacheKey: cacheKeys.getLatestFxKey,
         cacheExpiry: cacheExpiry.getLatestFxExpiry,
         fetchFresh: latestFetch
@@ -47,7 +47,7 @@ export const sourceConfigs: { [key: string]: CacheConfig } = {
 }
 
 interface CacheConfig {
-    name: string;
+    sourceName: string;
     cacheKey: string;
     cacheExpiry: number;
     fetchFresh: () => Promise<any>;
@@ -57,10 +57,10 @@ export async function fetchFromCacheOrSource(config: CacheConfig): Promise<TimeS
     const cachedData = await FxTimeSeriesDB.getLatestData(config.cacheKey, config.cacheExpiry);
 
     if (cachedData) {
-        console.log(`Serving ${config.name} from cache.`);
+        console.log(`Serving ${config.sourceName} from cache.`);
         return cachedData;
     } else {
-        console.log(`Fetching ${config.name} from API.`);
+        console.log(`Fetching ${config.sourceName} from API.`);
         return config.fetchFresh()
             .then(async data => {
                 const freshCachedData = await FxTimeSeriesDB.saveFx(config.cacheKey, data, Date.now());

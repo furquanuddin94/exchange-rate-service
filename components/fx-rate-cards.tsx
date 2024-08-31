@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 
 interface ExchangeRateProps {
   source: string;
-  rate?: number;
+  rate?: string;
   fetchedAt?: number;
 }
 
@@ -50,14 +50,14 @@ const FxRateCard: React.FC<ExchangeRateProps> = ({ source, rate, fetchedAt }) =>
 };
 
 interface ExchangeRatesListProps {
-  exchangeRates: { label: string; details: TimeSeriesData | null }[];
+  exchangeRates: { source: string; data: TimeSeriesData | null }[];
 }
 
 const FxRateCards: React.FC<ExchangeRatesListProps> = ({ exchangeRates }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {exchangeRates.map(({ label, details }) => (
-        <FxRateCard key={label} source={label} rate={details?.fxRate} fetchedAt={details?.timestamp} />
+      {exchangeRates.map(({ source, data }) => (
+        <FxRateCard key={source} source={source} rate={data?.fxRate?.toFixed(4)} fetchedAt={data?.timestamp} />
       ))}
     </div>
   );
