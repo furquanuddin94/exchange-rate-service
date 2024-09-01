@@ -11,10 +11,16 @@ export async function GET() {
 
             return {
                 source: config.sourceName,
+                displayName: config.displayName,
+                description: config.description,
+                fees: config.fees,
                 data: datapoints
             }
         })
     )
+
+    // sort in descending order by fx rate
+    latestDataFromAllSources.sort((a, b) => b.data.fxRate - a.data.fxRate);
 
     return NextResponse.json(latestDataFromAllSources);
 }

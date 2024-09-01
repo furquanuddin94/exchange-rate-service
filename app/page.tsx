@@ -54,24 +54,30 @@ const fetchAllFxRates = async () => {
 
 // Server Component
 const Page: React.FC = async () => {
-
   const [latestRates, allRates] = await Promise.all([fetchLatestFxRates(), fetchAllFxRates()]);
-
   return (
     <div className="container mx-auto p-4">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-3xl font-bold">Exchange Rates THB/INR</h1>
         <ModeToggle /> {/* Aligns the toggle to the right */}
       </div>
-      {/* Pass fetched data to the client component */}
-      <FxRateCards exchangeRates={latestRates} />
 
-      {/* Insert the MultiLineChart component below the cards */}
-      <div className="my-8 max-w-2xl mx-auto">
-        <MultiLineChart allSourceData={allRates} />
+      {/* Flex container for the cards and chart */}
+      <div className="flex flex-col md:flex-row">
+        {/* FxRateCards on the left */}
+        <div className="w-full md:w-1/2 mb-4 md:mb-0 md:pr-4">
+          <FxRateCards exchangeRates={latestRates} />
+        </div>
+
+        {/* MultiLineChart on the right */}
+        <div className="w-full md:w-1/2 md:pl-4">
+          <MultiLineChart allSourceData={allRates} />
+        </div>
       </div>
     </div>
+
   );
 };
+
 
 export default Page;
