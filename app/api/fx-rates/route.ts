@@ -2,6 +2,8 @@ import { fetchFromSource, fetchTimeSeriesDataPointsFromCache, sourceConfigs } fr
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
 
     const lookbackInHours = 24 * 30; // 30 days
