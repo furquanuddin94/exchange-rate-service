@@ -33,28 +33,28 @@ const FxRateCard: React.FC<ExchangeRateProps> = ({ displayName, description, fee
   }, [data]);
 
   return (
-    <Card className="rounded-lg p-1 shadow max-h-41">
-      <CardHeader className="flex flex-col justify-between min-h-[8rem]">
-        <div>
-          <CardTitle className="mb-1">{displayName}</CardTitle>
-          {description && <CardDescription className="min-h-[1rem]">
-            {description}
-          </CardDescription>}
-          {fees && <CardDescription className="min-h-[1rem]">
-            Fees: {fees}
-          </CardDescription>}
+    <Card className="w-full max-w-sm">
+      <div className="grid grid-cols-[1.5fr,1fr] gap-x-4 p-6">
+        <CardTitle className="text-2xl font-semibold self-start">{displayName}</CardTitle>
+        <div className="space-y-1 text-right">
+          {description && (
+            <CardDescription className="text-xs">{description}</CardDescription>
+          )}
+          {fees && (
+            <CardDescription className="text-xs">Fees: {fees}</CardDescription>
+          )}
         </div>
-      </CardHeader>
-      <CardContent>
-        {data && (
-          <p>1 THB = {data.fxRate.toFixed(4)} INR</p>
-        )}
-        {timeElapsed !== "" && (
-          <p className="text-xs">
-            Last fetched: <span className="font-light">{timeElapsed} ago</span>
-          </p>
-        )}
-      </CardContent>
+        <div className="col-span-2 mt-6 space-y-2">
+          {data && (
+            <p className="text-lg font-medium">1 THB = {data.fxRate.toFixed(4)} INR</p>
+          )}
+          {timeElapsed !== "" && (
+            <p className="text-xs text-muted-foreground">
+              Last fetched: <span className="font-light">{timeElapsed} ago</span>
+            </p>
+          )}
+        </div>
+      </div>
     </Card>
 
   );

@@ -65,12 +65,12 @@ const Page: React.FC = async () => {
       {/* Flex container for the cards and chart */}
       <div className="flex flex-col md:flex-row">
         {/* FxRateCards on the left */}
-        <div className="w-full md:w-1/2 mb-4 md:mb-0 md:pr-4">
+        <div className="w-full md:w-3/5 mb-4 md:mb-0 md:pr-4">
           <FxRateCards exchangeRates={latestRates} />
         </div>
 
         {/* MultiLineChart on the right */}
-        <div className="w-full md:w-1/2 md:pl-4">
+        <div className="w-full md:w-2/5 md:pl-4">
           <MultiLineChart allSourceData={allRates} />
         </div>
       </div>
