@@ -83,13 +83,14 @@ type SourceData = {
   data: TimeSeriesData[];
 }
 
-type MultiLineChartProps = {
-  allSourceData: SourceData[];
+interface MultiLineChartProps {
+  allSourceData: SourceData[]
 }
 
-export function MultiLineChart({ allSourceData }: MultiLineChartProps) {
+const MultiLineChart: React.FC<MultiLineChartProps> = ({ allSourceData }) => {
+
   const [lookback, setLookback] = useState<string>("24")
-  const [updatedChartData, setUpdatedChartData] = useState<ChartData | null>(null)
+  const [updatedChartData, setUpdatedChartData] = useState<ChartData | null>()
   const [visibleLines, setVisibleLines] = useState<{ [key: string]: boolean }>({})
 
   useEffect(() => {
@@ -235,7 +236,7 @@ export function MultiLineChart({ allSourceData }: MultiLineChartProps) {
             <CartesianGrid vertical={false} />
             <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} />
             <YAxis type="number" domain={['auto', 'auto']} tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(tick) => tick.toFixed(4)} />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent  />} />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <ChartLegend content={<CustomLegendContent />} />
             {keys.map((key) => (
               visibleLines[key] && (
@@ -255,3 +256,5 @@ export function MultiLineChart({ allSourceData }: MultiLineChartProps) {
     </Card>
   );
 }
+
+export default MultiLineChart;

@@ -1,34 +1,27 @@
 import { ModeToggle } from '@/components/mode-toggle';
-import { MultiLineChart } from '@/components/multi-line-chart';
 import React from 'react';
-import FxRateCards from '../components/fx-rate-cards';
 import { constants } from './utils/envUtils';
+import FxRateCards from './components/fx-rate-cards';
+import MultiLineChart from './components/multi-line-chart';
 export const dynamic = 'force-dynamic';
 
 const hostname = constants.url;
 
-const requestOptions: RequestInit = {
-  next: {
-    tags: ['fxRates'],
-    revalidate: 900
-  }
-};
-
+let commonHeaders = {};
 if (constants.protectionBypass) {
-  requestOptions.headers = { 'x-vercel-protection-bypass': constants.protectionBypass };
+  commonHeaders = { 'x-vercel-protection-bypass': constants.protectionBypass };
+  console.log("Protection bypass enabled");
+} else {
+  console.log("Protection bypass disabled");
 }
 
-constants.protectionBypass ? (
-  requestOptions.headers = { 'x-vercel-protection-bypass': constants.protectionBypass },
-  console.log("Protection bypass enabled")
-) : console.log("Protection bypass disabled");
 
 // Fetch data on the server side̥̥̥̥̥̥̥̥ ̥
 const fetchLatestFxRates = async () => {
   try {
     console.log("Fetching latest fx rates");
 
-    const latestFxRates = await fetch(hostname + `/api/fx-rates/latest`, requestOptions).then(response => response.json());
+    const latestFxRates = await fetch(hostname + `/api/fx-rates/latest`, { next: { revalidate: 600 }, headers: commonHeaders }).then(response => response.json());
 
     return latestFxRates;
   } catch (error) {
@@ -42,7 +35,7 @@ const fetchAllFxRates = async () => {
   try {
     console.log("Fetching all fx rates");
 
-    const chartData = await fetch(hostname + '/api/fx-rates', requestOptions).then(response => response.json());
+    const chartData = await fetch(hostname + '/api/fx-rates', { next: { tags: ['fxRates'] }, headers: commonHeaders }).then(response => response.json());
 
     return chartData;
   } catch (error) {
@@ -78,6 +71,5 @@ const Page: React.FC = async () => {
 
   );
 };
-
 
 export default Page;

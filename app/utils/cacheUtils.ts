@@ -84,35 +84,26 @@ interface CacheConfig {
     fees: string | null;
     cacheKey: string;
     cacheExpiry: number;
-    fetchFresh: () => Promise<any>;
+    fetchFresh: () => Promise<number>;
 }
 
-export async function fetchFromCacheOrSource(config: CacheConfig): Promise<TimeSeriesData> {
-    const cachedData = await FxTimeSeriesDB.getLatestData(config.cacheKey, config.cacheExpiry);
-
-    if (cachedData) {
-        console.log(`Serving ${config.sourceName} from cache.`);
-        return cachedData;
-    } else {
-        console.log(`Fetching ${config.sourceName} from API.`);
-        return config.fetchFresh()
-            .then(async data => {
-                const freshCachedData = await FxTimeSeriesDB.saveFx(config.cacheKey, data, Date.now());
-                return freshCachedData;
-            });
-    }
+export async function fetchFromSource(config: CacheConfig): Promise<number> {
+    console.log(`Fetching data from source for ${config.sourceName}`);
+    return await config.fetchFresh()
 }
 
-export async function fetchFromSource(config: CacheConfig): Promise<TimeSeriesData> {
+export async function fetchFromSourceAndCache(config: CacheConfig, timestamp: number): Promise<TimeSeriesData> {
+    console.log(`Fetching data from source and caching for ${config.sourceName}`);
     return config.fetchFresh().then(async data => {
-        const freshCachedData = await FxTimeSeriesDB.saveFx(config.cacheKey, data, Date.now());
-        return freshCachedData;
+        await FxTimeSeriesDB.saveFx(config.cacheKey, data, timestamp);
+
+        return { timestamp, fxRate: data };
     })
 }
 
 export async function fetchTimeSeriesDataPointsFromCache(config: CacheConfig, startTime: number, endTime: number): Promise<TimeSeriesData[]> {
+    console.log(`Serving timeseries data from cache for ${config.sourceName}`);
     const dataPoints = await FxTimeSeriesDB.getData(config.cacheKey, startTime, endTime);
-    console.log(`Serving chart data from cache.`);
 
     return dataPoints;
 }

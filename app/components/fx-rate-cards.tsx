@@ -2,7 +2,7 @@
 
 import { TimeSeriesData } from '@/app/utils/fxTimeSeriesDb';
 import React, { useEffect, useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from './ui/card';
+import { Card, CardTitle, CardDescription } from '../../components/ui/card';
 
 interface ExchangeRateProps {
   source: string;
@@ -60,11 +60,12 @@ const FxRateCard: React.FC<ExchangeRateProps> = ({ displayName, description, fee
   );
 };
 
-interface ExchangeRatesListProps {
+interface FxRateCardsProps {
   exchangeRates: ExchangeRateProps[];
 }
 
-const FxRateCards: React.FC<ExchangeRatesListProps> = ({ exchangeRates }) => {
+const FxRateCards: React.FC<FxRateCardsProps> = ({ exchangeRates }) => {
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {exchangeRates.map((exchangeRate, index) => (

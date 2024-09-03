@@ -1,4 +1,4 @@
-import { fetchFromCacheOrSource, sourceConfigs } from '@/app/utils/cacheUtils';
+import { fetchFromSource, sourceConfigs } from '@/app/utils/cacheUtils';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -7,14 +7,17 @@ export async function GET() {
 
     const latestDataFromAllSources = await Promise.all(
         Object.values(sourceConfigs).map(async config => {
-            const datapoints = await fetchFromCacheOrSource(config);
+            const fxRate = await fetchFromSource(config);
 
             return {
                 source: config.sourceName,
                 displayName: config.displayName,
                 description: config.description,
                 fees: config.fees,
-                data: datapoints
+                data: {
+                    fxRate,
+                    timestamp: Date.now()
+                }
             }
         })
     )

@@ -1,4 +1,4 @@
-import { fetchFromSource, fetchTimeSeriesDataPointsFromCache, sourceConfigs } from "@/app/utils/cacheUtils";
+import { fetchFromSource, fetchFromSourceAndCache, fetchTimeSeriesDataPointsFromCache, sourceConfigs } from "@/app/utils/cacheUtils";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
@@ -28,9 +28,10 @@ export async function GET() {
 
 export async function POST() {
 
+    const currentTime = Date.now();
     const freshDataFromSources = await Promise.all(
         Object.values(sourceConfigs).map(async config => {
-            const datapoints = await fetchFromSource(config);
+            const datapoints = await fetchFromSourceAndCache(config, currentTime);
 
             return {
                 source: config.sourceName,
@@ -41,6 +42,6 @@ export async function POST() {
 
     console.log("All FX rates fetched");
     revalidateTag('fxRates');
-    
+
     return NextResponse.json(freshDataFromSources);
 }
