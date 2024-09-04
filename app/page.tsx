@@ -3,6 +3,7 @@ import React from 'react';
 import { constants } from './utils/envUtils';
 import FxRateCards from './components/fx-rate-cards';
 import MultiLineChart from './components/multi-line-chart';
+
 export const dynamic = 'force-dynamic';
 
 const hostname = constants.url;
@@ -35,7 +36,7 @@ const fetchAllFxRates = async () => {
   try {
     console.log("Fetching all fx rates");
 
-    const chartData = await fetch(hostname + '/api/fx-rates', { next: { tags: ['fxRates'] }, headers: commonHeaders }).then(response => response.json());
+    const chartData = await fetch(hostname + '/api/fx-rates', { next: { revalidate: 600 }, headers: commonHeaders }).then(response => response.json());
 
     return chartData;
   } catch (error) {
