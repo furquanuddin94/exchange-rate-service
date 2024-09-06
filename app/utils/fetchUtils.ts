@@ -1,14 +1,12 @@
-export const fetchCache = 'force-no-store'
-
 export const deeMoneyFetch = async () => {
-    const response = await fetch('https://www.deemoney.com/api/v2/exchange-rates');
+    const response = await fetch('https://www.deemoney.com/api/v2/exchange-rates', { cache: 'no-store' });
     const data = await response.json();
     return 1 / (data.exchangeRates[0].rates.INR);
 };
 
 export const latestFetch = async () => {
 
-    const response = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/thb.json');
+    const response = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/thb.json', { cache: 'no-store' });
     const data = await response.json();
     return data.thb.inr;
 };
@@ -41,7 +39,8 @@ const _westernUnionFetch = async (amount: number) => {
         method: "POST",
         headers: myHeaders,
         body: graphql,
-        redirect: "follow"
+        redirect: "follow",
+        cache: 'no-store'
     };
     const response = await fetch("https://www.westernunion.com/router/", requestOptions);
     const data = await response.json();

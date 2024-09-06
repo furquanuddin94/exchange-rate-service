@@ -1,4 +1,4 @@
-import { fetchFromSource, fetchFromSourceAndCache, fetchTimeSeriesDataPointsFromCache, sourceConfigs } from "@/app/utils/cacheUtils";
+import { fetchFromSourceAndCache, fetchTimeSeriesDataPointsFromCache, sourceConfigs } from "@/app/utils/cacheUtils";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
