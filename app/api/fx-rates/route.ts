@@ -41,7 +41,7 @@ export async function POST() {
     )
 
     console.log("All FX rates fetched");
-    revalidateTag('fxRates');
+    revalidateTag('fx-rates');
 
     return NextResponse.json(freshDataFromSources);
 }
