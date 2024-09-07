@@ -4,7 +4,7 @@ import { constants } from './utils/envUtils';
 import FxRateCards from './components/fx-rate-cards';
 import MultiLineChart from './components/multi-line-chart';
 
-export const revalidate = 0; // https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config#revalidate
+export const revalidate = 600; // https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config#revalidate
 
 const hostname = constants.url;
 
@@ -21,7 +21,7 @@ const fetchLatestFxRates = async () => {
   try {
     console.log("Fetching latest fx rates");
 
-    const latestFxRates = await fetch(hostname + `/api/fx-rates/latest`, { next: { revalidate: 60 }, headers: commonHeaders }).then(response => response.json());
+    const latestFxRates = await fetch(hostname + `/api/fx-rates/latest`, { headers: commonHeaders }).then(response => response.json());
 
     return latestFxRates;
   } catch (error) {
@@ -35,6 +35,7 @@ const fetchAllFxRates = async () => {
   try {
     console.log("Fetching all fx rates");
 
+    // apparently the cache is not working as expected on vercel. It revalidates whenever page cache is invalidated.
     const chartData = await fetch(hostname + '/api/fx-rates', { next: { tags: ['fx-rates'], revalidate: 3600 }, headers: commonHeaders }).then(response => response.json());
 
     return chartData;
