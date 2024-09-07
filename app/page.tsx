@@ -1,6 +1,6 @@
 import { ModeToggle } from '@/components/mode-toggle';
 import React from 'react';
-import { constants } from './utils/envUtils';
+import { constants } from './libs/config';
 import FxRateCards from './components/fx-rate-cards';
 import MultiLineChart from './components/multi-line-chart';
 import { Analytics } from "@vercel/analytics/react"

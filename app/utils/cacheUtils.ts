@@ -1,5 +1,4 @@
 import { constants } from "./envUtils";
-import { deeMoneyFetch, latestFetch, westernUnion110kFetch, westernUnion10kFetch, westernUnion60kFetch } from "./fetchUtils";
 import FxTimeSeriesDB, { TimeSeriesData } from "./fxTimeSeriesDb";
 
 let cachePrefixArray = [];
@@ -11,7 +10,7 @@ if (constants.pullRequestId) {
 };
 const cachePrefixString = cachePrefixArray.length > 0 ? `${cachePrefixArray.join('-')}-` : 'local-';
 
-const cacheKeys = {
+export const cacheKeys = {
     getDeeMoneyFxKey: `${cachePrefixString}deemoney-fx`,
     getWesternUnionFxKey: `${cachePrefixString}western-union-fx`,
     getWesternUnion2FxKey: `${cachePrefixString}western-union-2-fx`,
@@ -37,7 +36,7 @@ export const sourceConfigs: { [key: string]: CacheConfig } = {
         description: 'Range: 0 to 500k',
         cacheKey: cacheKeys.getDeeMoneyFxKey,
         cacheExpiry: cacheExpiry.getDeeMoneyFxExpiry,
-        fetchFresh: deeMoneyFetch
+        fetchFresh: () => {return Promise.resolve(1)}
     },
     westernUnion: {
         sourceName: 'Western Union: 0 to 50k',
@@ -46,7 +45,7 @@ export const sourceConfigs: { [key: string]: CacheConfig } = {
         description: 'Range: 0 to 50k',
         cacheKey: cacheKeys.getWesternUnionFxKey,
         cacheExpiry: cacheExpiry.getWesternUnionFxExpiry,
-        fetchFresh: westernUnion10kFetch
+        fetchFresh: () => {return Promise.resolve(1)}
     },
     westernUnion2: {
         sourceName: 'Western Union: 50k to 100k',
@@ -55,7 +54,7 @@ export const sourceConfigs: { [key: string]: CacheConfig } = {
         description: 'Range: 50k to 100k',
         cacheKey: cacheKeys.getWesternUnion2FxKey,
         cacheExpiry: cacheExpiry.getWesternUnion2FxExpiry,
-        fetchFresh: westernUnion60kFetch
+        fetchFresh: () => {return Promise.resolve(1)}
     },
     westernUnion3: {
         sourceName: 'Western Union: 100k to 250k',
@@ -64,7 +63,7 @@ export const sourceConfigs: { [key: string]: CacheConfig } = {
         description: 'Range: 100k to 250k',
         cacheKey: cacheKeys.getWesternUnion3FxKey,
         cacheExpiry: cacheExpiry.getWesternUnion3FxExpiry,
-        fetchFresh: westernUnion110kFetch
+        fetchFresh: () => {return Promise.resolve(1)}
     },
     latest: {
         sourceName: 'Latest',
@@ -73,7 +72,7 @@ export const sourceConfigs: { [key: string]: CacheConfig } = {
         description: null,
         cacheKey: cacheKeys.getLatestFxKey,
         cacheExpiry: cacheExpiry.getLatestFxExpiry,
-        fetchFresh: latestFetch
+        fetchFresh: () => {return Promise.resolve(1)}
     }
 }
 
