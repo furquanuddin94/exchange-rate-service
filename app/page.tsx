@@ -22,7 +22,7 @@ const fetchLatestFxRates = async () => {
   try {
     console.log("Fetching latest fx rates");
 
-    const latestFxRates = await fetch(hostname + `/api/fx-rates/latest`, { next: { revalidate: 600 }, headers: commonHeaders }).then(response => response.json());
+    const latestFxRates = await fetch(hostname + `/api/fx-rates/latest`, { next: { revalidate: 60 }, headers: commonHeaders }).then(response => response.json());
 
     return latestFxRates;
   } catch (error) {
@@ -36,7 +36,7 @@ const fetchAllFxRates = async () => {
   try {
     console.log("Fetching all fx rates");
 
-    const chartData = await fetch(hostname + '/api/fx-rates', { next: { tags: ['fxRates'] }, headers: commonHeaders }).then(response => response.json());
+    const chartData = await fetch(hostname + '/api/fx-rates', { next: { revalidate: 60 }, headers: commonHeaders }).then(response => response.json());
 
     return chartData;
   } catch (error) {
