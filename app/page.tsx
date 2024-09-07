@@ -4,7 +4,7 @@ import { constants } from './utils/envUtils';
 import FxRateCards from './components/fx-rate-cards';
 import MultiLineChart from './components/multi-line-chart';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 120;
 
 const hostname = constants.url;
 
