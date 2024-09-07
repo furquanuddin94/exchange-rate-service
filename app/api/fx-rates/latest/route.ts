@@ -1,29 +1,26 @@
-import { fetchFromSource, sourceConfigs } from '@/app/utils/cacheUtils';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { FxRateEntriesProvider, FxRateEntry } from '@/app/libs/FxRateEntriesProvider';
 
-export const dynamic = 'force-dynamic';
+export type LatestFxRateResponse = {
+    data: FxRateEntry[];
+    fetchedAt: number;
+}
 
-export async function GET() {
+export async function GET(req: NextRequest) {
 
-    const latestDataFromAllSources = await Promise.all(
-        Object.values(sourceConfigs).map(async config => {
-            const fxRate = await fetchFromSource(config);
+    const { searchParams } = new URL(req.url);
 
-            return {
-                source: config.sourceName,
-                displayName: config.displayName,
-                description: config.description,
-                fees: config.fees,
-                data: {
-                    fxRate,
-                    timestamp: Date.now()
-                }
-            }
-        })
-    )
+    const fromCurrency = searchParams.get('from');
+    const toCurrency = searchParams.get('to');
 
-    // sort in descending order by fx rate
-    latestDataFromAllSources.sort((a, b) => b.data.fxRate - a.data.fxRate);
+    if (!fromCurrency || !toCurrency) {
+        return NextResponse.json({ error: 'From and to currencies are required' }, { status: 400 });
+    }
 
-    return NextResponse.json(latestDataFromAllSources);
+    const fxRateEntries = await FxRateEntriesProvider.getFxRateEntries(fromCurrency, toCurrency);
+
+    return NextResponse.json({
+        data: fxRateEntries,
+        fetchedAt: Date.now()
+    });
 }

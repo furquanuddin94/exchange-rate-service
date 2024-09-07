@@ -1,7 +1,7 @@
 import { currencyPairToFxRateEntriesConfig, defaultFxRateEntryProviderConfig, supportedFxRateSourceProviders } from "./config";
 import { providersMap as providerMap } from "./FxRateSourceProvider";
 
-type FxRateEntry = { source: string, displayName: string, uniqueDisplayName: string, fxRate: number, range?: string, fees?: string }
+export type FxRateEntry = { source: string, displayName: string, uniqueDisplayName: string, fxRate: number, range?: string, fees?: string }
 
 export const FxRateEntriesProvider = {
     getFxRateEntries: async (fromCurrency: string, toCurrency: string): Promise<FxRateEntry[]> => {
