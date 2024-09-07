@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "exchange-rate-service",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
