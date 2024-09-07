@@ -3,6 +3,7 @@ import React from 'react';
 import { constants } from './utils/envUtils';
 import FxRateCards from './components/fx-rate-cards';
 import MultiLineChart from './components/multi-line-chart';
+import { Analytics } from "@vercel/analytics/react"
 
 export const revalidate = 600; // https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config#revalidate
 
@@ -68,6 +69,7 @@ const Page: React.FC = async () => {
           <MultiLineChart allSourceData={allRates} />
         </div>
       </div>
+      <Analytics />
     </div>
 
   );
