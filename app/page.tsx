@@ -4,7 +4,7 @@ import { constants } from './utils/envUtils';
 import FxRateCards from './components/fx-rate-cards';
 import MultiLineChart from './components/multi-line-chart';
 
-export const revalidate = 60;
+export const revalidate = 600;
 
 const hostname = constants.url;
 
@@ -22,7 +22,7 @@ const fetchLatestFxRates = async () => {
   try {
     console.log("Fetching latest fx rates");
 
-    const latestFxRates = await fetch(hostname + `/api/fx-rates/latest`, { cache: 'no-store', headers: commonHeaders }).then(response => response.json());
+    const latestFxRates = await fetch(hostname + `/api/fx-rates/latest`, { headers: commonHeaders }).then(response => response.json());
 
     return latestFxRates;
   } catch (error) {
