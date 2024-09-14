@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { ReactNode, useEffect, useState } from "react"
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"

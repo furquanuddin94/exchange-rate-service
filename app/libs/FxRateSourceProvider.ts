@@ -15,7 +15,7 @@ const createFxRateSourceProvider = (
   try {
     const rates = await getRates(fromCurrency, toCurrency, amount);
     return rates;
-  } catch (error) {
+  } catch (error: any) {
     console.warn(`Error fetching FX rates. Source: ${config.displayName}, From currency: ${fromCurrency}, To currency: ${toCurrency}:`, error.message);
     return null;
   }
