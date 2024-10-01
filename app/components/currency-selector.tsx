@@ -1,46 +1,42 @@
 // components/CurrencySelector.tsx
-"use client"; // This makes the component a client-side component
+"use client";
 
-import React, { useState } from 'react';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select"
+import React, { useContext, useEffect } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CurrencyContext } from './CurrencyContext';
+import { supportedCurrencies } from '../libs/config';
 
-const currencyList = ['USD', 'EUR', 'INR', 'THB', 'GBP', 'JPY'];
-
-  // Callback to handle currency selection
-  const handleCurrencySelect = (fromCurrency: string, toCurrency: string) => {
-    console.log(`Selected From: ${fromCurrency}, To: ${toCurrency}`);
-    // Update your state or trigger a data refresh as needed
-  };
+const currencyList = Object.keys(supportedCurrencies).sort();
 
 export default function CurrencySelector() {
-  const [fromCurrency, setFromCurrency] = useState('USD');
-  const [toCurrency, setToCurrency] = useState('INR');
+  const { fromCurrency, toCurrency, setFromCurrency, setToCurrency } = useContext(CurrencyContext);
 
-  const handleFromCurrencyChange = (value: string) => {
-    setFromCurrency(value);
-    handleCurrencySelect(value, toCurrency);
-  };
+  // Add useEffect hooks to log when currencies change
+  useEffect(() => {
+    console.log(`From Currency changed to: ${fromCurrency}`);
+  }, [fromCurrency]);
 
-  const handleToCurrencyChange = (value: string) => {
-    setToCurrency(value);
-    handleCurrencySelect(fromCurrency, value);
-  };
+  useEffect(() => {
+    console.log(`To Currency changed to: ${toCurrency}`);
+  }, [toCurrency]);
 
-  const CurrencySelect = ({ label, value, onChange }) => (
+  const CurrencySelect = ({
+    label,
+    value,
+    onChange,
+  }: {
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+  }) => (
     <div className="flex items-center space-x-2">
       <span className="text-sm font-medium">{label}</span>
-      <Select onValueChange={onChange} defaultValue={value}>
+      <Select onValueChange={onChange} value={value}>
         <SelectTrigger>
-          <SelectValue placeholder={`Select ${label} Currency`} />
+          <SelectValue placeholder={`Select ${label} Currency`}>{value}</SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {currencyList.map(currency => (
+          {currencyList.map((currency) => (
             <SelectItem key={currency} value={currency}>
               {currency}
             </SelectItem>
@@ -49,22 +45,11 @@ export default function CurrencySelector() {
       </Select>
     </div>
   );
-  
+
   return (
     <div className="grid grid-cols-2 gap-6 mb-4 md:mr-3">
-      <CurrencySelect
-        label="From"
-        value={fromCurrency}
-        onChange={handleFromCurrencyChange}
-      />
-      <CurrencySelect
-        label="To"
-        value={toCurrency}
-        onChange={handleToCurrencyChange}
-      />
+      <CurrencySelect label="From" value={fromCurrency} onChange={setFromCurrency} />
+      <CurrencySelect label="To" value={toCurrency} onChange={setToCurrency} />
     </div>
   );
-  
-  
-  
 }

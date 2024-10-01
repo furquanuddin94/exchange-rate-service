@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useEffect, useState } from "react"
+import React, { ReactNode, useContext, useEffect, useState } from "react"
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 import {
   Card,
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/chart"
 import { getTimeLabel } from "@/app/utils/chartUtils"
 import { TimeSeriesData } from "@/app/utils/fxTimeSeriesDb"
+import { CurrencyContext } from "./CurrencyContext";
 
 type ChartDataPoint = {
   label: string
@@ -92,6 +93,8 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ allSourceData }) => {
   const [lookback, setLookback] = useState<string>("24")
   const [updatedChartData, setUpdatedChartData] = useState<ChartData | null>()
   const [visibleLines, setVisibleLines] = useState<{ [key: string]: boolean }>({})
+
+  const { fromCurrency, toCurrency } = useContext(CurrencyContext);
 
   useEffect(() => {
     const lookbackInHours = parseInt(lookback)
@@ -198,6 +201,11 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ allSourceData }) => {
       ))}
     </div>
   );
+
+  // Check if the currencies are 'THB' and 'INR'
+  if (fromCurrency !== 'THB' || toCurrency !== 'INR') {
+    return null; // Return nothing if currencies are not 'THB' and 'INR'
+  }
 
   return (
     <Card>

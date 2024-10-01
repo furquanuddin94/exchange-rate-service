@@ -1,20 +1,31 @@
+// fx-rate-cards.tsx
 'use client';
 
-import { TimeSeriesData } from '@/app/utils/fxTimeSeriesDb';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Card, CardTitle, CardDescription } from '../../components/ui/card';
+import { CurrencyContext } from './CurrencyContext';
+import { ClipLoader } from 'react-spinners';
 
+// Define the shape of the exchange rate data
 interface ExchangeRateProps {
   source: string;
   displayName: string;
   description: string | null;
   fees: string | null;
-  data: TimeSeriesData | null
+  data: {
+    timestamp: number;
+    fxRate: number;
+    fromCurrency: string;
+    toCurrency: string;
+  };
+  fxRate: number;
 }
 
-const FxRateCard: React.FC<ExchangeRateProps> = ({ displayName, description, fees, data }) => {
+// Define the FxRateCard component
+const FxRateCard: React.FC<ExchangeRateProps> = ({ displayName, description, fees, data, fxRate }) => {
   const [timeElapsed, setTimeElapsed] = useState<string>("");
 
+  // Calculate the elapsed time since the data was fetched
   useEffect(() => {
     if (data) {
       const calculateElapsedTime = () => {
@@ -29,9 +40,14 @@ const FxRateCard: React.FC<ExchangeRateProps> = ({ displayName, description, fee
       };
 
       calculateElapsedTime();
+
+      // Update the elapsed time every second
+      const interval = setInterval(calculateElapsedTime, 1000);
+      return () => clearInterval(interval);
     }
   }, [data]);
 
+  // Render the FxRateCard component
   return (
     <Card className="w-full max-w-sm">
       <div className="grid grid-cols-[1.5fr,1fr] gap-x-4 p-6">
@@ -46,7 +62,9 @@ const FxRateCard: React.FC<ExchangeRateProps> = ({ displayName, description, fee
         </div>
         <div className="col-span-2 mt-6 space-y-2">
           {data && (
-            <p className="text-lg font-medium">1 THB = {data.fxRate.toFixed(4)} INR</p>
+            <p className="text-lg font-medium">
+              1 {data.fromCurrency} = {fxRate.toFixed(4)} {data.toCurrency}
+            </p>
           )}
           {timeElapsed !== "" && (
             <p className="text-xs text-muted-foreground">
@@ -56,23 +74,66 @@ const FxRateCard: React.FC<ExchangeRateProps> = ({ displayName, description, fee
         </div>
       </div>
     </Card>
-
   );
 };
 
-interface FxRateCardsProps {
-  exchangeRates: ExchangeRateProps[];
-}
+// Define the FxRateCards component
+const FxRateCards: React.FC = () => {
+  const { fromCurrency, toCurrency } = useContext(CurrencyContext);
+  const [fxRates, setFxRates] = useState<ExchangeRateProps[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-const FxRateCards: React.FC<FxRateCardsProps> = ({ exchangeRates }) => {
+  // Fetch the latest exchange rates
+  useEffect(() => {
+    const fetchFxRates = async () => {
+      try {
+        setLoading(true);
+        console.log('Fetching fresh rates');
+        const response = await fetch(`/api/fx-rates/latest?from=${fromCurrency}&to=${toCurrency}`, {
+          next: { revalidate: 300 }  // 5 minutes
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        const formattedData = data.data.map((rate: any) => ({
+          ...rate,
+          data: {
+            timestamp: data.fetchedAt,
+            fxRate: rate.fxRate,
+            fromCurrency,
+            toCurrency,
+          },
+        }));
+        console.log(formattedData);
+        setFxRates(formattedData);
+      } catch (error) {
+        console.error('Error fetching fx rates:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFxRates();   
+  }, [fromCurrency, toCurrency]);
+
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {exchangeRates.map((exchangeRate, index) => (
-        <FxRateCard key={index} {...exchangeRate} />
-      ))}
+      {loading ? (
+        <div className="col-span-1 md:col-span-2 flex justify-center items-center py-20">
+          <ClipLoader size={50} color="var(--foreground)" /> 
+        </div>
+      ) : fxRates.length > 0 ? (
+        fxRates.map((fxRate, index) => (
+          <FxRateCard key={index} {...fxRate} />
+        ))
+      ) : (
+        <p>No exchange rates available.</p>
+      )}
     </div>
   );
-};
+}
 
-export default FxRateCards;
+// Export the FxRateCards component
+export default FxRateCards; 

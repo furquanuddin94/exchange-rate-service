@@ -12,25 +12,73 @@ export const supportedCurrencies: Record<string, { countryIsoCode: string, curre
         'countryIsoCode': 'US',
         'currencyIsoCode': 'USD',
     },
-    'THB': {
-        'countryIsoCode': 'TH',
-        'currencyIsoCode': 'THB',
+    'EUR': {
+        'countryIsoCode': 'EU',
+        'currencyIsoCode': 'EUR',
+    },
+    'GBP': {
+        'countryIsoCode': 'GB',
+        'currencyIsoCode': 'GBP',
+    },
+    'JPY': {
+        'countryIsoCode': 'JP',
+        'currencyIsoCode': 'JPY',
+    },
+    'AUD': {
+        'countryIsoCode': 'AU',
+        'currencyIsoCode': 'AUD',
+    },
+    'CAD': {
+        'countryIsoCode': 'CA',
+        'currencyIsoCode': 'CAD',
+    },
+    'CHF': {
+        'countryIsoCode': 'CH',
+        'currencyIsoCode': 'CHF',
+    },
+    'CNY': {
+        'countryIsoCode': 'CN',
+        'currencyIsoCode': 'CNY',
+    },
+    'NZD': {
+        'countryIsoCode': 'NZ',
+        'currencyIsoCode': 'NZD',
     },
     'INR': {
         'countryIsoCode': 'IN',
         'currencyIsoCode': 'INR',
     },
-    'IDR': {
-        'countryIsoCode': 'ID',
-        'currencyIsoCode': 'IDR',
+    'SGD': {
+        'countryIsoCode': 'SG',
+        'currencyIsoCode': 'SGD',
+    },
+    'HKD': {
+        'countryIsoCode': 'HK',
+        'currencyIsoCode': 'HKD',
+    },
+    'ZAR': {
+        'countryIsoCode': 'ZA',
+        'currencyIsoCode': 'ZAR',
+    },
+    'THB': {
+        'countryIsoCode': 'TH',
+        'currencyIsoCode': 'THB',
     },
     'PHP': {
         'countryIsoCode': 'PH',
         'currencyIsoCode': 'PHP',
     },
-    'EUR': {
-        'countryIsoCode': 'DE',
-        'currencyIsoCode': 'EUR',
+    'IDR': {
+        'countryIsoCode': 'ID',
+        'currencyIsoCode': 'IDR',
+    },
+    'BRL': {
+        'countryIsoCode': 'BR',
+        'currencyIsoCode': 'BRL',
+    },
+    'MXN': {
+        'countryIsoCode': 'MX',
+        'currencyIsoCode': 'MXN',
     }
 }
 
