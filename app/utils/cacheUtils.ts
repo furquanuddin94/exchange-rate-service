@@ -92,7 +92,7 @@ export async function fetchFromSource(config: CacheConfig): Promise<number> {
 }
 
 export async function fetchFromSourceAndCache(config: CacheConfig, timestamp: number): Promise<TimeSeriesData> {
-    console.log(`Fetching data from source and caching for ${config.sourceName}`);
+    console.log(`Fetching data from source and putting in redis cache for ${config.sourceName}`);
     return config.fetchFresh().then(async data => {
         await FxTimeSeriesDB.saveFx(config.cacheKey, data, timestamp);
 
@@ -101,7 +101,7 @@ export async function fetchFromSourceAndCache(config: CacheConfig, timestamp: nu
 }
 
 export async function fetchTimeSeriesDataPointsFromCache(config: CacheConfig, startTime: number, endTime: number): Promise<TimeSeriesData[]> {
-    console.log(`Serving timeseries data from cache for ${config.sourceName}`);
+    console.log(`Serving timeseries data from redis cache for ${config.sourceName}`);
     const dataPoints = await FxTimeSeriesDB.getData(config.cacheKey, startTime, endTime);
 
     return dataPoints;
