@@ -1,6 +1,3 @@
-// page.tsx
-"use client";
-
 import React, { useState, useEffect } from 'react';
 import { ModeToggle } from '@/components/mode-toggle';
 import FxRateCards from './components/fx-rate-cards';
@@ -33,18 +30,9 @@ const fetchAllFxRates = async () => {
   }
 };
 
-const Page: React.FC = () => {
+const Page: React.FC = async() => {
 
-  console.log("Host URL:", hostname);
-  const [allRates, setAllRates] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetchAllFxRates();
-      setAllRates(data);
-    };
-    fetchData();
-  }, []);
+  const allRates = await fetchAllFxRates();
 
   return (
     <CurrencyProvider>
