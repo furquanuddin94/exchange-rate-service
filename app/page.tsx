@@ -34,6 +34,8 @@ const fetchAllFxRates = async () => {
 };
 
 const Page: React.FC = () => {
+
+  console.log("Host URL:", hostname);
   const [allRates, setAllRates] = useState<any>(null);
 
   useEffect(() => {
