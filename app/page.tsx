@@ -48,7 +48,7 @@ const Page: React.FC = () => {
     <CurrencyProvider>
       <div className="container mx-auto p-4">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-3xl font-bold">Exchange Rates</h1>
+          <h1 className="text-3xl font-bold">FX Rates</h1>
           <ModeToggle /> {/* Aligns the toggle to the right */}
         </div>
 

@@ -10,27 +10,24 @@ import { ClipLoader } from 'react-spinners';
 interface ExchangeRateProps {
   source: string;
   displayName: string;
-  description: string | null;
+  range: string | null;
   fees: string | null;
-  data: {
-    timestamp: number;
-    fxRate: number;
-    fromCurrency: string;
-    toCurrency: string;
-  };
+  fetchedAt: number;
   fxRate: number;
+  fromCurrency: string;
+  toCurrency: string;
 }
 
 // Define the FxRateCard component
-const FxRateCard: React.FC<ExchangeRateProps> = ({ displayName, description, fees, data, fxRate }) => {
+const FxRateCard: React.FC<ExchangeRateProps> = ({ displayName, range, fees, fetchedAt, fxRate, fromCurrency, toCurrency }) => {
   const [timeElapsed, setTimeElapsed] = useState<string>("");
 
   // Calculate the elapsed time since the data was fetched
   useEffect(() => {
-    if (data) {
+    if (fetchedAt) {
       const calculateElapsedTime = () => {
         const now = Date.now();
-        const elapsedTime = Math.round((now - data.timestamp) / 1000);
+        const elapsedTime = Math.round((now - fetchedAt) / 1000);
 
         const minutes = Math.floor(elapsedTime / 60);
         const seconds = elapsedTime % 60;
@@ -45,7 +42,12 @@ const FxRateCard: React.FC<ExchangeRateProps> = ({ displayName, description, fee
       const interval = setInterval(calculateElapsedTime, 1000);
       return () => clearInterval(interval);
     }
-  }, [data]);
+  }, [fetchedAt]);
+
+  // If fxRate is null, return null
+  if (fxRate === null) {
+    return null;
+  }
 
   // Render the FxRateCard component
   return (
@@ -53,17 +55,17 @@ const FxRateCard: React.FC<ExchangeRateProps> = ({ displayName, description, fee
       <div className="grid grid-cols-[1.5fr,1fr] gap-x-4 p-6">
         <CardTitle className="text-2xl font-semibold self-start">{displayName}</CardTitle>
         <div className="space-y-1 text-right">
-          {description && (
-            <CardDescription className="text-xs">{description}</CardDescription>
+          {range && (
+            <CardDescription className="text-xs">Range: {range}</CardDescription>
           )}
           {fees && (
             <CardDescription className="text-xs">Fees: {fees}</CardDescription>
           )}
         </div>
         <div className="col-span-2 mt-6 space-y-2">
-          {data && (
+          {fxRate && (
             <p className="text-lg font-medium">
-              1 {data.fromCurrency} = {fxRate.toFixed(4)} {data.toCurrency}
+              1 {fromCurrency} = {fxRate.toFixed(4)} {toCurrency}
             </p>
           )}
           {timeElapsed !== "" && (
@@ -98,14 +100,9 @@ const FxRateCards: React.FC = () => {
         const data = await response.json();
         const formattedData = data.data.map((rate: any) => ({
           ...rate,
-          data: {
-            timestamp: data.fetchedAt,
-            fxRate: rate.fxRate,
-            fromCurrency,
-            toCurrency,
-          },
+          fromCurrency,
+          toCurrency,
         }));
-        console.log(formattedData);
         setFxRates(formattedData);
       } catch (error) {
         console.error('Error fetching fx rates:', error);
@@ -114,7 +111,7 @@ const FxRateCards: React.FC = () => {
       }
     };
 
-    fetchFxRates();   
+    fetchFxRates();
   }, [fromCurrency, toCurrency]);
 
 
@@ -122,7 +119,7 @@ const FxRateCards: React.FC = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {loading ? (
         <div className="col-span-1 md:col-span-2 flex justify-center items-center py-20">
-          <ClipLoader size={50} color="var(--foreground)" /> 
+          <ClipLoader size={50} color="var(--foreground)" />
         </div>
       ) : fxRates.length > 0 ? (
         fxRates.map((fxRate, index) => (
