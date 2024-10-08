@@ -6,8 +6,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Exchange rate THB/INR",
-  description: "Exchange rate THB/INR",
+  title: "Compare FX",
+  description: "Compare FX",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
