@@ -5,7 +5,7 @@ export interface TimeSeriesData {
     fxRate: number;
 }
 
-const FxTimeSeriesDB = {
+export const FxTimeSeriesDB = {
     /**
      * Saves foreign exchange rate data to the database.
      *
@@ -66,5 +66,3 @@ const FxTimeSeriesDB = {
         return null
     }
 };
-
-export default FxTimeSeriesDB;

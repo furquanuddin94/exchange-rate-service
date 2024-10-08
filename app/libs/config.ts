@@ -1,11 +1,34 @@
-import { cacheKeys } from "@/app/utils/cacheUtils";
-
-export const constants = {
+export const envConstants = {
     env: process.env.NEXT_PUBLIC_VERCEL_ENV,
     url: process.env.VERCEL_BRANCH_URL ? `https://${process.env.VERCEL_BRANCH_URL}` : 'http://localhost:3000',
     pullRequestId: process.env.NEXT_PUBLIC_VERCEL_GIT_PULL_REQUEST_ID,
     protectionBypass: process.env.VERCEL_PROTECTION_BYPASS
 }
+
+// Cache prefix calculation
+const getCachePrefix = () => {
+    const env = process.env.NEXT_PUBLIC_VERCEL_ENV || 'production';
+    const pullRequestId = process.env.NEXT_PUBLIC_VERCEL_GIT_PULL_REQUEST_ID;
+    let cachePrefixArray = [];
+    if (env) {
+        cachePrefixArray.push(env);
+    }
+    if (pullRequestId) {
+        cachePrefixArray.push(pullRequestId);
+    }
+    return cachePrefixArray.length > 0 ? `${cachePrefixArray.join('-')}-` : 'local-';
+};
+
+const cachePrefix = getCachePrefix();
+
+// Cache keys: legacy, need to be migrated to new keys
+const cacheKeys = {
+    getDeeMoneyFxKey: `${cachePrefix}deemoney-fx`,
+    getWesternUnionFxKey: `${cachePrefix}western-union-fx`,
+    getWesternUnion2FxKey: `${cachePrefix}western-union-2-fx`,
+    getWesternUnion3FxKey: `${cachePrefix}western-union-3-fx`,
+    getLatestFxKey: `${cachePrefix}latest-fx`,
+};
 
 export const supportedCurrencies: Record<string, { countryIsoCode: string, currencyIsoCode: string }> = {
     'USD': {

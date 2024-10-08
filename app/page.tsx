@@ -7,14 +7,14 @@ import FxRateCards from './components/fx-rate-cards';
 import MultiLineChart from './components/multi-line-chart';
 import CurrencySelector from './components/currency-selector';
 import { Analytics } from "@vercel/analytics/react";
-import { constants } from './libs/config';
 import { CurrencyProvider } from '@/app/components/CurrencyContext';
+import { envConstants } from '@/app/libs/config';
 
-const hostname = constants.url;
+const hostname = envConstants.url;
 
 let commonHeaders: HeadersInit = {};
-if (constants.protectionBypass) {
-  commonHeaders = { 'x-vercel-protection-bypass': constants.protectionBypass };
+if (envConstants.protectionBypass) {
+  commonHeaders = { 'x-vercel-protection-bypass': envConstants.protectionBypass };
   console.log("Protection bypass enabled");
 } else {
   console.log("Protection bypass disabled");

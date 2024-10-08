@@ -23,9 +23,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { getTimeLabel } from "@/app/utils/chartUtils"
-import { TimeSeriesData } from "@/app/utils/fxTimeSeriesDb"
 import { CurrencyContext } from "./CurrencyContext";
+import { TimeSeriesData } from "../libs/FxTimeSeriesDb";
 
 type ChartDataPoint = {
   label: string
@@ -88,6 +87,20 @@ type SourceData = {
 interface MultiLineChartProps {
   allSourceData: SourceData[]
 }
+
+const getTimeLabel = (timestamp: number, granularityInMinutes: number): string => {
+  "use client";
+  const date = new Date(timestamp);
+  let options: Intl.DateTimeFormatOptions;
+
+  if (granularityInMinutes < (24 * 60)) {
+      options = { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' };
+  } else {
+      options = { day: 'numeric', month: 'short' };
+  }
+
+  return date.toLocaleDateString('en-US', options);
+};
 
 const MultiLineChart: React.FC<MultiLineChartProps> = ({ allSourceData }) => {
 
