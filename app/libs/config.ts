@@ -1,6 +1,6 @@
 export const envConstants = {
     env: process.env.NEXT_PUBLIC_VERCEL_ENV,
-    url: process.env.VERCEL_BRANCH_URL ? `https://${process.env.VERCEL_BRANCH_URL}` : 'http://localhost:3000',
+    url: process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL}` : 'http://localhost:3000',
     protectionBypass: process.env.VERCEL_PROTECTION_BYPASS
 }
 
