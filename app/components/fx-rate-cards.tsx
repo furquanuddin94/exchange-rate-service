@@ -25,22 +25,29 @@ const FxRateCard: React.FC<ExchangeRateProps> = ({ displayName, range, fees, fet
   // Calculate the elapsed time since the data was fetched
   useEffect(() => {
     if (fetchedAt) {
-      const calculateElapsedTime = () => {
-        const now = Date.now();
-        const elapsedTime = Math.round((now - fetchedAt) / 1000);
+      const now = Date.now();
+      const elapsedTime = Math.round((now - fetchedAt) / 1000);
 
-        const minutes = Math.floor(elapsedTime / 60);
-        const seconds = elapsedTime % 60;
+      let time = '';
+      const days = Math.floor(elapsedTime / (24 * 60 * 60));
+      const hours = Math.floor((elapsedTime % (24 * 60 * 60)) / (60 * 60));
+      const minutes = Math.floor((elapsedTime % (60 * 60)) / 60);
+      const seconds = elapsedTime % 60;
 
-        const time = (minutes > 0 ? `${minutes}m ` : "") + `${seconds}s`;
-        setTimeElapsed(time);
-      };
+      if (days > 0) {
+        time += `${days}d `;
+      }
+      if (hours > 0) {
+        time += `${hours}h `;
+      }
+      if (minutes > 0) {
+        time += `${minutes}m `;
+      }
+      if (seconds > 0 || time === '') {
+        time += `${seconds}s`;
+      }
 
-      calculateElapsedTime();
-
-      // Update the elapsed time every second
-      const interval = setInterval(calculateElapsedTime, 1000);
-      return () => clearInterval(interval);
+      setTimeElapsed(time.trim());
     }
   }, [fetchedAt]);
 
@@ -102,6 +109,7 @@ const FxRateCards: React.FC = () => {
           ...rate,
           fromCurrency,
           toCurrency,
+          fetchedAt: data.fetchedAt
         }));
         setFxRates(formattedData);
       } catch (error) {
