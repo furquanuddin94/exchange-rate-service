@@ -1,12 +1,8 @@
 import { FxRateCache, CachedFxRateEntry } from "@/app/libs/FxRateCache";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
-import NodeCache from 'node-cache';
 
 export const dynamic = 'force-dynamic';
-
-// Create a new cache instance with a 15-minute TTL
-const cache = new NodeCache({ stdTTL: 15 * 60 });
 
 // Define the type for the transformed data
 type TransformedFxData = {
@@ -20,15 +16,6 @@ type TransformedFxData = {
 export async function GET() {
     const fromCurrency = 'THB';
     const toCurrency = 'INR';
-    const cacheKey = `${fromCurrency}-${toCurrency}-data`;
-    let cachedData = cache.get<TransformedFxData>(cacheKey);
-
-    if (cachedData) {
-        console.log(`Local cache hit for key: ${cacheKey}`);
-        return NextResponse.json(cachedData);
-    }
-
-    console.log(`Local cache miss for key: ${cacheKey}, fetching data from cache`);
 
     const endTime = Date.now();
     const startTime = endTime - 90 * 24 * 60 * 60 * 1000; // 90 days ago
@@ -55,9 +42,7 @@ export async function GET() {
         return acc;
     }, [] as TransformedFxData);
 
-    // Store the result in cache with the specified TTL
-    cache.set(cacheKey, transformedData);
-    console.log(`Data cached in local cache with key: ${cacheKey}`);
+    console.log("All FX rates fetched from cache");
 
     return NextResponse.json(transformedData);
 }

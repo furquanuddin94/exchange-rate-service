@@ -98,9 +98,7 @@ const FxRateCards: React.FC = () => {
       try {
         setLoading(true);
         console.log('Fetching fresh rates');
-        const response = await fetch(`/api/fx-rates/latest?from=${fromCurrency}&to=${toCurrency}`, {
-          next: { revalidate: 300 }  // 5 minutes
-        });
+        const response = await fetch(`/api/fx-rates/latest?from=${fromCurrency}&to=${toCurrency}`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }

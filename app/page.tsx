@@ -21,7 +21,10 @@ if (envConstants.protectionBypass) {
 const fetchAllFxRates = async () => {
   try {
     console.log("Fetching all fx rates");
-    const response = await fetch(hostname + '/api/fx-rates', { headers: commonHeaders });
+    const response = await fetch(hostname + '/api/fx-rates', { 
+      headers: commonHeaders,
+      next: { tags: ['fx-rates'] }
+    });
     const chartData = await response.json();
     return chartData;
   } catch (error: any) {
