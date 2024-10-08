@@ -129,9 +129,11 @@ const FxRateCards: React.FC = () => {
             <ClipLoader size={50} color="var(--foreground)" />
           </div>
         ) : fxRates.length > 0 ? (
-          fxRates.map((fxRate, index) => (
-            <FxRateCard key={index} {...fxRate} />
-          ))
+          fxRates
+            .sort((a, b) => b.fxRate - a.fxRate)
+            .map((fxRate, index) => (
+              <FxRateCard key={index} {...fxRate} />
+            ))
         ) : (
           <p>No exchange rates available.</p>
         )}
