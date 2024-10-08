@@ -54,6 +54,7 @@ const lookbackOptions = [
   { value: "96", label: "Last 4 days" },
   { value: "168", label: "Last 7 days" },
   { value: "720", label: "Last 30 days" },
+  { value: "2160", label: "Last 90 days" },
 ]
 
 const CustomLegendItem: React.FC<CustomLegendItemProps> = ({ color, label, onClick, isVisible }) => (
@@ -202,9 +203,24 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ allSourceData }) => {
     </div>
   );
 
-  // Check if the currencies are 'THB' and 'INR'
+  // Check if the currencies are supported for the chart
   if (fromCurrency !== 'THB' || toCurrency !== 'INR') {
-    return null; // Return nothing if currencies are not 'THB' and 'INR'
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>FX Comparison</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-64">
+            <p className="text-center text-muted-foreground">
+              Chart is not supported for the selected currency pair.
+              <br />
+              Please choose THB to INR for comparison.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (

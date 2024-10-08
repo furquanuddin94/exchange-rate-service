@@ -116,18 +116,23 @@ const FxRateCards: React.FC = () => {
 
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {loading ? (
-        <div className="col-span-1 md:col-span-2 flex justify-center items-center py-20">
-          <ClipLoader size={50} color="var(--foreground)" />
-        </div>
-      ) : fxRates.length > 0 ? (
-        fxRates.map((fxRate, index) => (
-          <FxRateCard key={index} {...fxRate} />
-        ))
-      ) : (
-        <p>No exchange rates available.</p>
-      )}
+    <div className="flex flex-col">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {loading ? (
+          <div className="col-span-1 md:col-span-2 flex justify-center items-center py-20">
+            <ClipLoader size={50} color="var(--foreground)" />
+          </div>
+        ) : fxRates.length > 0 ? (
+          fxRates.map((fxRate, index) => (
+            <FxRateCard key={index} {...fxRate} />
+          ))
+        ) : (
+          <p>No exchange rates available.</p>
+        )}
+      </div>
+      <p className="mt-4 text-sm text-muted-foreground">
+        Note: Exchange rates may vary based on transaction amount. The displayed rates are indicative and may not reflect all possible ranges for these currencies.
+      </p>
     </div>
   );
 }
