@@ -1,4 +1,4 @@
-"use client"; // This ensures the component is client-side only
+"use client"; // Ensures the component is client-side only
 
 import React, { createContext, useEffect, useState } from 'react';
 
@@ -19,26 +19,35 @@ export const CurrencyContext = createContext<CurrencyContextType>({
 export const CurrencyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [fromCurrency, setFromCurrency] = useState<string>('THB');
   const [toCurrency, setToCurrency] = useState<string>('INR');
+  const [isClient, setIsClient] = useState(false);
 
+  // Detect if the code is running on the client side
   useEffect(() => {
-    const savedFromCurrency = localStorage.getItem('fromCurrency');
-    const savedToCurrency = localStorage.getItem('toCurrency');
-    
-    if (savedFromCurrency) {
-      setFromCurrency(savedFromCurrency);
-    }
-    if (savedToCurrency) {
-      setToCurrency(savedToCurrency);
-    }
+    setIsClient(true);
+
+    const storedFromCurrency = localStorage.getItem('fromCurrency');
+    const storedToCurrency = localStorage.getItem('toCurrency');
+
+    if (storedFromCurrency) setFromCurrency(storedFromCurrency);
+    if (storedToCurrency) setToCurrency(storedToCurrency);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('fromCurrency', fromCurrency);
-  }, [fromCurrency]);
+    if (isClient) {
+      localStorage.setItem('fromCurrency', fromCurrency);
+    }
+  }, [fromCurrency, isClient]);
 
   useEffect(() => {
-    localStorage.setItem('toCurrency', toCurrency);
-  }, [toCurrency]);
+    if (isClient) {
+      localStorage.setItem('toCurrency', toCurrency);
+    }
+  }, [toCurrency, isClient]);
+
+  if (!isClient) {
+    // Don't render anything until the component is mounted on the client
+    return null;
+  }
 
   return (
     <CurrencyContext.Provider value={{ fromCurrency, setFromCurrency, toCurrency, setToCurrency }}>
