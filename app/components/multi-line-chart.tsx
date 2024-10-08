@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { ReactNode, useEffect, useState } from "react"
+import React, { ReactNode, useContext, useEffect, useState } from "react"
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 import {
   Card,
@@ -23,8 +23,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { getTimeLabel } from "@/app/utils/chartUtils"
-import { TimeSeriesData } from "@/app/utils/fxTimeSeriesDb"
+import { CurrencyContext } from "./CurrencyContext";
+import { TimeSeriesData } from "../libs/FxTimeSeriesDb";
 
 type ChartDataPoint = {
   label: string
@@ -53,6 +53,7 @@ const lookbackOptions = [
   { value: "96", label: "Last 4 days" },
   { value: "168", label: "Last 7 days" },
   { value: "720", label: "Last 30 days" },
+  { value: "2160", label: "Last 90 days" },
 ]
 
 const CustomLegendItem: React.FC<CustomLegendItemProps> = ({ color, label, onClick, isVisible }) => (
@@ -87,11 +88,27 @@ interface MultiLineChartProps {
   allSourceData: SourceData[]
 }
 
+const getTimeLabel = (timestamp: number, granularityInMinutes: number): string => {
+  "use client";
+  const date = new Date(timestamp);
+  let options: Intl.DateTimeFormatOptions;
+
+  if (granularityInMinutes < (24 * 60)) {
+      options = { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' };
+  } else {
+      options = { day: 'numeric', month: 'short' };
+  }
+
+  return date.toLocaleDateString('en-US', options);
+};
+
 const MultiLineChart: React.FC<MultiLineChartProps> = ({ allSourceData }) => {
 
   const [lookback, setLookback] = useState<string>("24")
   const [updatedChartData, setUpdatedChartData] = useState<ChartData | null>()
   const [visibleLines, setVisibleLines] = useState<{ [key: string]: boolean }>({})
+
+  const { fromCurrency, toCurrency } = useContext(CurrencyContext);
 
   useEffect(() => {
     const lookbackInHours = parseInt(lookback)
@@ -198,6 +215,26 @@ const MultiLineChart: React.FC<MultiLineChartProps> = ({ allSourceData }) => {
       ))}
     </div>
   );
+
+  // Check if the currencies are supported for the chart
+  if (fromCurrency !== 'THB' || toCurrency !== 'INR') {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>FX Comparison</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-64">
+            <p className="text-center text-muted-foreground">
+              Chart is not supported for the selected currency pair.
+              <br />
+              Please choose THB to INR for comparison.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

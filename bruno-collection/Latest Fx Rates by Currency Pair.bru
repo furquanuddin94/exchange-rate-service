@@ -1,0 +1,16 @@
+meta {
+  name: Latest Fx Rates by Currency Pair
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:3000/api/fx-rates/latest?from=THB&to=INR
+  body: none
+  auth: none
+}
+
+params:query {
+  from: THB
+  to: INR
+}
