@@ -97,6 +97,10 @@ export const supportedCurrencies: Record<string, { countryIsoCode: string, curre
     'MXN': {
         'countryIsoCode': 'MX',
         'currencyIsoCode': 'MXN',
+    },
+    'MYR': {
+        'countryIsoCode': 'MY',
+        'currencyIsoCode': 'MYR',
     }
 }
 
