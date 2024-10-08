@@ -7,8 +7,8 @@ export const envConstants = {
 
 // Cache prefix calculation
 const getCachePrefix = () => {
-    const env = process.env.NEXT_PUBLIC_VERCEL_ENV || 'production';
-    const pullRequestId = process.env.NEXT_PUBLIC_VERCEL_GIT_PULL_REQUEST_ID;
+    const env = envConstants.env || 'production';
+    const pullRequestId = envConstants.pullRequestId;
     let cachePrefixArray = [];
     if (env) {
         cachePrefixArray.push(env);
