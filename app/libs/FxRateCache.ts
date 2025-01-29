@@ -24,7 +24,7 @@ export const FxRateCache = {
 
         for (const entry of fxRateEntries) {
             const configEntry = config.find(c => c.source === entry.source && c.range === entry.range);
-            if (configEntry && configEntry.cacheKey) {
+            if (configEntry && configEntry.cacheKey && !isNaN(entry.fxRate)) {
                 await FxTimeSeriesDB.saveFx(configEntry.cacheKey, entry.fxRate, timestamp);
             }
             cachedEntries.push({
